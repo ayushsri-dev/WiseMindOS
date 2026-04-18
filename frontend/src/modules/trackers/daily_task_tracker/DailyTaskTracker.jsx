@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Clock, Plus, ListTodo, X, CheckCircle2, CalendarSyncIcon } from 'lucide-react';
+import { Calendar, Clock, Plus, ListTodo, X, CheckCircle2, CalendarSyncIcon, CalendarClock, ClipboardList, CheckSquare } from 'lucide-react';
 import { useApp } from '../../../store/AppContext';
 import Card from '../../../components/Card';
 import DonutChart from '../../../components/DonutChart';
@@ -28,6 +28,7 @@ const DailyTaskTracker = () => {
   const [addMode, setAddMode] = useState('tasks'); // 'tasks' | 'habits' | 'manual'
   const [selectedTaskIds, setSelectedTaskIds] = useState([]);
   const [showManualForm, setShowManualForm] = useState(false);
+  const [activeView, setActiveView] = useState('timeline');
   const [manualTaskForm, setManualTaskForm] = useState({
     title: '',
     startTime: '09:00',
@@ -49,7 +50,7 @@ const DailyTaskTracker = () => {
 
   const START_HOUR = 0;
   const END_HOUR = 24;
-  const HOUR_HEIGHT = 200;
+  const HOUR_HEIGHT = 145;
 
   const hours = Array.from(
     { length: END_HOUR - START_HOUR },
@@ -174,6 +175,7 @@ const DailyTaskTracker = () => {
     });
     setShowManualForm(false);
     setActiveTab('timeline');
+    setActiveView('timeline');
   };
 
   const toggleTaskSelection = (taskId) => {
@@ -211,6 +213,7 @@ const DailyTaskTracker = () => {
     setSelectedTask(null);
     setShowTimeModal(false);
     setActiveTab('timeline');
+    setActiveView('timeline');
   };
 
   const getSourceBadge = (source) => {
@@ -358,7 +361,11 @@ const DailyTaskTracker = () => {
           {/* Tab Navigation */}
           <div className="flex gap-2 mb-6">
             <button
-              onClick={() => setActiveTab('timeline')}
+              onClick={() => {
+                setActiveTab('timeline');
+                setActiveView('timeline');
+
+              }}
               className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${activeTab === 'timeline'
                 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
                 : 'bg-white/5 text-gray-400 hover:bg-white/10'
@@ -446,156 +453,253 @@ const DailyTaskTracker = () => {
                     icon={<span className="text-2xl">🌙</span>}
                     gradient="from-indigo-400 to-purple-500"
                   /> */}
+
+
+                  {/* Tab Navigation */}
+                  <div className="flex gap-2 mb-6">
+                    <button
+                      onClick={() => setActiveView('timeline')}
+                      className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${activeView === 'timeline'
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        }`}
+                      data-testid="timeline-view-tab"
+                    >
+                      <CalendarClock size={20} className="inline mr-2" />
+                      Timeline View ({dailyPlan.plannedTasks.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveView('list')}
+                      className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${activeView === 'list'
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        }`}
+                      data-testid="tasks-list-view-tab"
+                    >
+                      <CheckSquare size={20} className="inline mr-2" />
+                      Task List View
+                    </button>
+                  </div>
+
                   {/* NEW TIME GRID VIEW - POLISHED */}
-                  <div className="flex relative mt-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                  {activeView === 'timeline' && (
+                    <div className="flex relative mt-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
 
-                    {/* LEFT TIME COLUMN */}
-                    <div className="w-20 bg-black/30 border-r border-white/10">
-                      {hours.map(hour => (
-                        <div
-                          key={hour}
-                          className="h-[200px] flex items-start justify-end pr-3 pt-1 text-xs text-gray-400 border-b border-white/5"
-                        >
-                          {`${hour.toString().padStart(2, '0')}:00`}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* RIGHT GRID AREA */}
-                    <div className="flex-1 relative">
-
-                      {/* GRID BACKGROUND */}
-                      <div className="absolute inset-0">
+                      {/* LEFT TIME COLUMN */}
+                      <div className="w-20 bg-black/30 border-r border-white/10">
                         {hours.map(hour => (
                           <div
                             key={hour}
-                            className="h-[200px] border-b border-white/5"
-                          />
+                            className="h-[145px] flex items-start justify-end pr-3 pt-1 text-xs text-gray-400 border-b border-white/5"
+                          >
+                            {`${hour.toString().padStart(2, '0')}:00`}
+                          </div>
                         ))}
                       </div>
 
-                      {/* SUBTLE VERTICAL GRID LINES */}
-                      <div className="absolute inset-0 grid grid-cols-4 opacity-20">
-                        <div className="border-r border-white/10"></div>
-                        <div className="border-r border-white/10"></div>
-                        <div className="border-r border-white/10"></div>
-                        <div></div>
-                      </div>
+                      {/* RIGHT GRID AREA */}
+                      <div className="flex-1 relative">
 
-                      {/* EMPTY STATE (temporary) */}
-                      {dailyPlan.plannedTasks.length === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <p className="text-gray-500 text-sm">
-                            No tasks scheduled yet
-                          </p>
-                        </div>
-                      )}
-
-                      {/* (Tasks will come next step) */}
-                      {activeTasks.map((task) => {
-                        const [sh, sm] = task.startTime.split(':').map(Number);
-                        const [eh, em] = task.endTime.split(':').map(Number);
-
-                        const startInHours = sh + sm / 60;
-                        const endInHours = eh + em / 60;
-
-                        const top = (startInHours - START_HOUR) * HOUR_HEIGHT;
-                        const height = (endInHours - startInHours) * HOUR_HEIGHT;
-
-                        // 🔥 Adaptive UI logic
-                        const isSmall = height < 60;
-                        const isMedium = height >= 60 && height < 100;
-
-                        return (
-                          <div
-                            key={task.id}
-                            className={`group absolute left-4 right-4 pointer-events-auto rounded-xl p-2 backdrop-blur-lg border shadow-lg transition-all
-        ${task.completed
-                                ? 'opacity-50 border-gray-500'
-                                : 'border-indigo-400 hover:scale-[1.02]'
-                              }`}
-                            style={{
-                              top: `${top}px`,
-                              height: `${height}px`,
-                              backgroundColor:
-                                task.source === 'task'
-                                  ? 'rgba(59,130,246,0.3)'
-                                  : task.source === 'habit'
-                                    ? 'rgba(34,197,94,0.3)'
-                                    : 'rgba(168,85,247,0.3)'
-                            }}
-                          >
-
-                            {/* 🔥 ACTION BUTTONS (FIXED) */}
+                        {/* GRID BACKGROUND */}
+                        <div className="absolute inset-0">
+                          {hours.map(hour => (
                             <div
-                              className={`absolute top-1 right-1 flex gap-1 transition z-20
-    ${height < 80 ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
-  `}
+                              key={hour}
+                              className="h-[145px] border-b border-white/5"
+                            />
+                          ))}
+                        </div>
+
+                        {/* SUBTLE VERTICAL GRID LINES */}
+                        <div className="absolute inset-0 grid grid-cols-4 opacity-20">
+                          <div className="border-r border-white/10"></div>
+                          <div className="border-r border-white/10"></div>
+                          <div className="border-r border-white/10"></div>
+                          <div></div>
+                        </div>
+
+                        {/* EMPTY STATE (temporary) */}
+                        {dailyPlan.plannedTasks.length === 0 && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <p className="text-gray-500 text-sm">
+                              No tasks scheduled yet
+                            </p>
+                          </div>
+                        )}
+
+                        {/* (Tasks will come next step) */}
+                        {activeTasks.map((task) => {
+                          const [sh, sm] = task.startTime.split(':').map(Number);
+                          const [eh, em] = task.endTime.split(':').map(Number);
+
+                          const startInHours = sh + sm / 60;
+                          const endInHours = eh + em / 60;
+
+                          const top = (startInHours - START_HOUR) * HOUR_HEIGHT;
+                          const height = (endInHours - startInHours) * HOUR_HEIGHT;
+
+                          // 🔥 Adaptive UI logic
+                          const isSmall = height < 60;
+                          const isMedium = height >= 30 && height < 40;
+
+                          return (
+                            <div
+                              key={task.id}
+                              className={`group absolute left-4 right-4 pointer-events-auto rounded-xl p-2 backdrop-blur-lg border shadow-lg transition-all
+        ${task.completed
+                                  ? 'opacity-50 border-gray-500'
+                                  : 'border-indigo-400 hover:scale-[1.02]'
+                                }`}
+                              style={{
+                                top: `${top}px`,
+                                height: `${height}px`,
+                                backgroundColor:
+                                  task.source === 'task'
+                                    ? 'rgba(59,130,246,0.3)'
+                                    : task.source === 'habit'
+                                      ? 'rgba(34,197,94,0.3)'
+                                      : 'rgba(168,85,247,0.3)'
+                              }}
                             >
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleDailyPlanTaskCompletion(task.id);
-                                }}
-                                className={`p-2 rounded ${task.completed
-                                  ? 'bg-green-500/20 text-green-400'
-                                  : 'bg-black/40 text-gray-300 hover:bg-green-500/20 hover:text-green-400'
-                                  }`}
+
+                              {/* 🔥 ACTION BUTTONS (FIXED) */}
+                              <div
+                                className="absolute top-1 right-1 flex gap-1 transition z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                               >
-                                <CheckCircle2 size={14} />
-                              </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleDailyPlanTaskCompletion(task.id);
+                                  }}
+                                  className={`p-2 rounded ${task.completed
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-black/40 text-gray-300 hover:bg-green-500/20 hover:text-green-400'
+                                    }`}
+                                >
+                                  <CheckCircle2 size={14} />
+                                </button>
 
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  removeFromDailyPlan(task.id);
-                                }}
-                                className="p-2 rounded bg-black/40 text-gray-300 hover:bg-red-500/20 hover:text-red-400"
-                              >
-                                <X size={14} />
-                              </button>
-                            </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeFromDailyPlan(task.id);
+                                  }}
+                                  className="p-2 rounded bg-black/40 text-gray-300 hover:bg-red-500/20 hover:text-red-400"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
 
-                            {/* 🔥 CONTENT */}
-                            <div className="h-full flex flex-col justify-start overflow-hidden">
+                              {/* 🔥 CONTENT */}
+                              <div className="h-full flex flex-col justify-start overflow-hidden">
 
-                              {/* TITLE (ALWAYS VISIBLE) */}
-                              <p className={`text-sm font-semibold truncate ${task.completed
-                                ? 'line-through text-gray-400'
-                                : 'text-white'
-                                }`}>
-                                {task.title}
-                              </p>
-
-                              {/* TIME (ONLY IF SPACE AVAILABLE) */}
-                              {!isSmall && (
-                                <p className="text-xs text-gray-300 mt-1 truncate">
-                                  {task.startTime} - {task.endTime}
+                                {/* TITLE (ALWAYS VISIBLE) */}
+                                <p className={`text-sm font-semibold truncate ${task.completed
+                                  ? 'line-through text-gray-400'
+                                  : 'text-white'
+                                  }`}>
+                                  {task.title}
                                 </p>
-                              )}
 
-                              {/* BADGES (ONLY IF LARGE BLOCK) */}
-                              {!isSmall && !isMedium && (
-                                <div className="flex gap-2 mt-1 flex-wrap">
-                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-gray-300">
-                                    {task.source}
-                                  </span>
+                                {/* TIME (ONLY IF SPACE AVAILABLE) */}
+                                {!isSmall && (
+                                  <p className="text-xs text-gray-300 mt-1 truncate">
+                                    {task.startTime} - {task.endTime}
+                                  </p>
+                                )}
 
-                                  {task.isImportant && (
-                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">
-                                      Important
+                                {/* BADGES (ONLY IF LARGE BLOCK) */}
+                                {!isSmall && !isMedium && (
+                                  <div className="flex gap-2 mt-1 flex-wrap">
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-gray-300">
+                                      {task.source}
                                     </span>
-                                  )}
-                                </div>
-                              )}
 
+                                    {task.isImportant && (
+                                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">
+                                        Important
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                      </div>
+                    </div>
+                  )}
+                  {activeView === 'list' && (
+                    <div className="space-y-3 p-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.15)]">
+                      <h2 className="text-xl font-bold text-white mb-4">Today's Planned Tasks</h2>
+                      {activeTasks.map((item, index) => (
+                        <motion.div
+                          key={item.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="relative"
+                        >
+                          {/* Timeline dot
+                          <div className="absolute -left-[27px] top-4 w-3 h-3 rounded-full bg-indigo-500 border-2 border-gray-900" /> */}
+
+                          <div className="bg-white/5 rounded-lg shadow-lg backdrop-blur-lg p-3 border border-white/10 hover:border-white/50 transition-all">
+                            <div className="flex items-start gap-3">
+                              {/* Time */}
+                              <div className="text-center min-w-[60px]">
+                                <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
+                                <p className="text-xs text-gray-500">{item.endTime}</p>
+                              </div>
+
+                              {/* Content */}
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between gap-3 mb-2">
+                                  <div className="flex-1">
+                                    <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                                      {item.title}
+                                    </h4>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <span className={`text-xs px-2 py-0.5 rounded-full border ${getSourceBadge(item.source).color}`}>
+                                        {getSourceBadge(item.source).label}
+                                      </span>
+                                      {item.isImportant && (
+                                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                          Important
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Actions */}
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => toggleDailyPlanTaskCompletion(item.id)}
+                                      className={`p-2 rounded-lg transition-all ${item.completed
+                                        ? 'bg-green-500/20 text-green-400'
+                                        : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                                        }`}
+                                      data-testid={`complete-daily-task-${item.id}`}
+                                    >
+                                      <CheckCircle2 size={20} />
+                                    </button>
+                                    <button
+                                      onClick={() => removeFromDailyPlan(item.id)}
+                                      className="p-2 rounded-lg bg-gray-700/50 text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition-all"
+                                      data-testid={`remove-daily-task-${item.id}`}
+                                    >
+                                      <X size={20} />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        );
-                      })}
-
+                        </motion.div>
+                      ))}
                     </div>
-                  </div>
+                  )}
                   {completedTasks.length > 0 && (
                     <div className="mt-8">
 
@@ -751,7 +855,7 @@ const DailyTaskTracker = () => {
 
               {/* Suggested Habits */}
               {addMode === 'habits' && (
-                <Card>
+                <Card className='bg-white/5 border backdrop-blur-2xl border-white/10'>
                   <h3 className="text-lg font-semibold text-white mb-4">Suggested Habits</h3>
                   {suggestedHabits.length > 0 ? (
                     <div className="space-y-3">
@@ -793,7 +897,7 @@ const DailyTaskTracker = () => {
 
               {/* Create Manual Task */}
               {addMode === 'manual' && (
-                <Card>
+                <Card className='bg-white/5 border border-white/10 backdrop-blur-2xl'>
                   <h3 className="text-lg font-semibold text-white mb-4">Create Manual Task</h3>
                   <form onSubmit={handleCreateManualTask} className="space-y-4">
                     <InputField

@@ -286,11 +286,6 @@ hover:scale-110 active:scale-95 cursor-pointer transition-all"
           <div className="lg:col-span-1">
             <Card className='bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.15)]'>
 
-              {/* <h2 className="text-xl font-bold text-white mb-4">Today's Tasks</h2>
-              {todayTasks.length > 0 ? (
-                <div className="space-y-3">
-                  {todayTasks.map((task, index) => ( */}
-
               <h2 className="text-xl font-bold text-white mb-4">Today's Planned Tasks</h2>
               {hasPlannedTasks ? (
                 <div className="space-y-3 max-h-[600px] overflow-y-auto">
@@ -303,12 +298,6 @@ hover:scale-110 active:scale-95 cursor-pointer transition-all"
                       className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
                       data-testid={`focus-task-${item.id}`}
                     >
-                      {/* <TaskItem
-                        key={task.id}
-                        task={task}
-                        onToggle={toggleTaskCompletion}
-                        onDelete={deleteTask}
-                      /> */}
 
                       <div className="flex items-start gap-2">
                         {/* Time */}
@@ -330,8 +319,8 @@ hover:scale-110 active:scale-95 cursor-pointer transition-all"
                         <button
                           onClick={() => toggleDailyPlanTaskCompletion(item.id)}
                           className={`p-2 rounded-lg transition-all flex-shrink-0 ${item.completed
-                              ? 'bg-green-500/20 text-green-400'
-                              : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
                             }`}
                           data-testid={`toggle-focus-task-${item.id}`}
                         >

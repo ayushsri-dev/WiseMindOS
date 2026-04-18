@@ -15,7 +15,7 @@ const ProjectCard = ({ project, progress, linkedGoal, onClick }) => {
 
   return (
     <Card 
-      className="hover:scale-105 transition-transform duration-300 cursor-pointer" 
+      className="hover:scale-105 transition-transform duration-300 cursor-pointer bg-white/5 border border-white/10 backdrop-blur-lg" 
       onClick={onClick}
       data-testid={`project-card-${project.id}`}
     >
