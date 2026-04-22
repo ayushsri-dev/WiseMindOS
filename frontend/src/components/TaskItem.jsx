@@ -10,7 +10,7 @@ const TaskItem = ({ task, onToggle, onDelete, showGoal = true, showProject = tru
         task.completed 
           ? 'bg-green-900/20 border-green-500/50' 
           : isLate
-          ? 'bg-red-900/20 border-red-500/50'
+          ? 'bg-red-600/10 backdrop-blur-2xl border-red-400/50'
           : 'bg-gray-700/30 border-gray-600'
       }`}
       data-testid={`task-item-${task.id}`}
@@ -19,7 +19,7 @@ const TaskItem = ({ task, onToggle, onDelete, showGoal = true, showProject = tru
         <button
           onClick={() => onToggle(task.id)}
           data-testid={`task-toggle-${task.id}`}
-          className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+          className={`w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all flex-shrink-0 ${
             task.completed 
               ? 'bg-green-600 border-green-600' 
               : 'border-gray-500 hover:border-gray-400'

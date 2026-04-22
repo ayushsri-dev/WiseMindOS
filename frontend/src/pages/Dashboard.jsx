@@ -244,19 +244,26 @@ const Dashboard = () => {
             </h2>
             <div className="space-y-3">
               {importantTasks.slice(0, 4).map(task => (
-                <motion.div key={task.id} whileHover={{ scale: 1.02 }}>
+                <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
                   <TaskItem
                     task={task}
                     onToggle={toggleTaskCompletion}
                   />
                 </motion.div>
               ))}
-              <Link to="/focus-room">
-                <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
-                  <span>Enter Focus Room</span>
-                  <ArrowRight size={20} />
-                </GradientButton>
-              </Link>
+              <div className='flex gap-2 w-full h-full justify-between mt-4'>
+                <Link to="/focus-room">
+                  <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
+                    <span>Enter Focus Room</span>
+                    <ArrowRight size={20} />
+                  </GradientButton>
+                </Link>
+                <Link to="/trackers/daily-tasks">
+                  <GradientButton className='flex items-center'w-full h-full data-testid="plan-now-btn">
+                    Add To Plan Now
+                  </GradientButton>
+                </Link>
+              </div>
             </div>
           </Card>
         )}
@@ -328,12 +335,19 @@ const Dashboard = () => {
                   </div>
                 </motion.div>
               ))}
-              <Link to="/focus-room">
-                <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
-                  <span>Enter Focus Room</span>
-                  <ArrowRight size={20} />
-                </GradientButton>
-              </Link>
+              <div className='flex gap-2 w-full h-full justify-between mt-4'>
+                <Link to="/focus-room">
+                  <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
+                    <span>Enter Focus Room</span>
+                    <ArrowRight size={20} />
+                  </GradientButton>
+                </Link>
+                <Link to="/trackers/daily-tasks">
+                  <GradientButton className='flex items-center'w-full h-full data-testid="plan-now-btn">
+                    Plan Ahead
+                  </GradientButton>
+                </Link>
+              </div>
             </div>
           </Card>
         ) : (
@@ -355,25 +369,33 @@ const Dashboard = () => {
 
         {/* Behind Tasks */}
         {behindTasks.length > 0 && (
-          <Card className="mb-6 border-red-500/30 bg-orange-500/5 backdrop-blur-lg">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <AlertTriangle className="text-red-400" size={18} /> Behind Schedule
+          <Card className="mb-6 border-red-500/30 bg-orange-400/5 backdrop-blur-lg">
+            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <AlertTriangle className="text-red-400" size={18} /> Deadline Crossed/Approaching
             </h2>
+            <p className="text-gray-400 text-sm mb-4">Act fast on these tasks, These tasks need your attention.</p>
             <div className="space-y-3">
               {behindTasks.slice(0, 4).map(task => (
-                <motion.div key={task.id} whileHover={{ scale: 1.02 }}>
+                <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
                   <TaskItem
                     task={task}
                     onToggle={toggleTaskCompletion}
                   />
                 </motion.div>
               ))}
-              <Link to="/focus-room">
-                <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
-                  <span>Enter Focus Room</span>
-                  <ArrowRight size={20} />
-                </GradientButton>
-              </Link>
+              <div className='flex gap-2 w-full h-full justify-between mt-4'>
+                <Link to="/focus-room">
+                  <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
+                    <span>Enter Focus Room</span>
+                    <ArrowRight size={20} />
+                  </GradientButton>
+                </Link>
+                <Link to="/trackers/daily-tasks">
+                  <GradientButton className='flex items-center'w-full h-full data-testid="plan-now-btn">
+                    Add To Plan Now
+                  </GradientButton>
+                </Link>
+              </div>
             </div>
           </Card>
         )}
