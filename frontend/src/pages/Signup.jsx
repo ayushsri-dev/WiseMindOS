@@ -53,6 +53,7 @@ const Signup = () => {
           name: formData.name,
           username: formData.username, 
           email: formData.email,
+          bio: response.bio,
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));

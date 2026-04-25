@@ -32,6 +32,7 @@ const Dashboard = () => {
     tasks,
     habits,
     dailyPlan,
+    updateUser,
     calculateGoalProgress,
     calculateProjectProgress,
     toggleDailyPlanTaskCompletion,
@@ -42,7 +43,7 @@ const Dashboard = () => {
     calculateDisciplineScore
   } = useApp();
 
-  const [newProfile, setNewProfile] = useState({ name: user.name, username: user.username, bio: '' });
+  const [newProfile, setNewProfile] = useState({ name: user.name, username: user.username, bio: user.bio });
 
   const navigate = useNavigate();
 
@@ -97,12 +98,44 @@ const Dashboard = () => {
   const topProjects = projects.slice(0, 4);
   const topHabits = habits.slice(0, 3);
 
-  const handleEditProfile = (e)=>{
+  const handleEditProfile = async (e) => {
     e.preventDefault();
-    setNewProfile({ name: user.name, username: user.username, bio: '' });
-    setShowEditProfile(false);
-    return;
-  }
+
+    // Prepare only changed fields
+    const updates = {};
+
+    if (newProfile.name !== "" && newProfile.name !== user.name) {
+      updates.name = newProfile.name;
+    }
+
+    if (newProfile.username !== "" && newProfile.username !== user.username) {
+      updates.username = newProfile.username;
+    }
+
+    if (newProfile.bio !== user.bio) {
+      updates.bio = newProfile.bio;
+    }
+
+    // If nothing changed → don't call API
+    if (Object.keys(updates).length === 0) {
+      setShowEditProfile(false);
+      return;
+    }
+
+    // Call context API
+    const success = await updateUser(updates);
+
+    if (success) {
+      // Reset form with updated values
+      setNewProfile({
+        name: updates.name ?? user.name,
+        username: updates.username ?? user.username,
+        bio: updates.bio ?? user.bio
+      });
+
+      setShowEditProfile(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pb-20 px-4 pt-6 relative overflow-hidden">
@@ -128,7 +161,7 @@ const Dashboard = () => {
 
             <div className="rounded w-full mb-6 p-4 flex flex-col items-center">
               <div className='w-full flex items-end justify-end'>
-                <button onClick={() => setShowEditProfile(true)} className='bg-white/10 hover:bg-white/15 cursor-pointer border flex gap-2 border-white/15 hover:border-white/25 hover:translate-y-0.5 px-4 py-2 text-white rounded-2xl default-bold shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300'> <UserPen size={20}/> <span>Edit</span></button>
+                <button onClick={() => setShowEditProfile(true)} className='bg-white/10 hover:bg-white/15 cursor-pointer border flex gap-2 border-white/15 hover:border-white/25 hover:translate-y-0.5 px-4 py-2 text-white rounded-2xl default-bold shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300'> <UserPen size={20} /> <span>Edit</span></button>
               </div>
               {/* Image div  */}
               <div className='h-30 w-30 rounded-full relative group border-6 border-black/15 shadow-[0_0_40px_rgba(99,102,241,0.2)] shrink-0'>
@@ -146,7 +179,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className='text-gray-400 mb-6'>Heyaa My aim is Software Developer . come lets build momentum today. Give me your hand.</div>
+            <div className='text-gray-400 mb-6'>{user.bio || 'Add Bio'}</div>
 
             <div className='flex justify-around mb-4'>
               <div className="text-center">
@@ -249,67 +282,67 @@ const Dashboard = () => {
         </div>
 
         {(importantTasks.length > 0 || behindTasks.length > 0) && (
-        <div className='border-orange-500/30 bg-orange-500/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg items-stretch mb-4'>
-          <div className='flex gap-2 flex-col lg:flex-row'>
-            {/* Important Tasks */}
-            {importantTasks.length > 0 && (
-              <div className="bg-transparent flex-1 p-4">
-                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                  {/* <span className="text-orange-400">⭐</span> */}
-                  <Star className="text-orange-400 " size={18} />
-                  Important Tasks
-                </h2>
-                <p className="text-gray-400 text-sm mb-4">High Priority Tasks, Complete these first.</p>
-                <div className="space-y-3">
-                  {importantTasks.slice(0, 4).map(task => (
-                    <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
-                      <TaskItem
-                        task={task}
-                        onToggle={toggleTaskCompletion}
-                      />
-                    </motion.div>
-                  ))}
+          <div className='border-orange-500/30 bg-orange-500/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg items-stretch mb-4'>
+            <div className='flex gap-2 flex-col lg:flex-row'>
+              {/* Important Tasks */}
+              {importantTasks.length > 0 && (
+                <div className="bg-transparent flex-1 p-4">
+                  <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    {/* <span className="text-orange-400">⭐</span> */}
+                    <Star className="text-orange-400 " size={18} />
+                    Important Tasks
+                  </h2>
+                  <p className="text-gray-400 text-sm mb-4">High Priority Tasks, Complete these first.</p>
+                  <div className="space-y-3">
+                    {importantTasks.slice(0, 4).map(task => (
+                      <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                        <TaskItem
+                          task={task}
+                          onToggle={toggleTaskCompletion}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {importantTasks.length > 0 && behindTasks.length > 0 && (
-            <div className="self-stretch border-2 border-red-500/50 rounded-full opacity-0 lg:opacity-100"></div>)}
+              {importantTasks.length > 0 && behindTasks.length > 0 && (
+                <div className="self-stretch border-2 border-red-500/50 rounded-full opacity-0 lg:opacity-100"></div>)}
 
-            {/* Behind Tasks */}
-            {behindTasks.length > 0 && (
-              <div className="bg-transparent flex-1 p-4">
-                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                  <AlertTriangle className="text-red-400" size={18} /> Deadline Expired
-                </h2>
-                <p className="text-gray-400 text-sm mb-4">Act fast on these tasks, You are already running late.</p>
-                <div className="space-y-3">
-                  {behindTasks.slice(0, 4).map(task => (
-                    <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
-                      <TaskItem
-                        task={task}
-                        onToggle={toggleTaskCompletion}
-                      />
-                    </motion.div>
-                  ))}
+              {/* Behind Tasks */}
+              {behindTasks.length > 0 && (
+                <div className="bg-transparent flex-1 p-4">
+                  <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <AlertTriangle className="text-red-400" size={18} /> Deadline Expired
+                  </h2>
+                  <p className="text-gray-400 text-sm mb-4">Act fast on these tasks, You are already running late.</p>
+                  <div className="space-y-3">
+                    {behindTasks.slice(0, 4).map(task => (
+                      <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                        <TaskItem
+                          task={task}
+                          onToggle={toggleTaskCompletion}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-          <div className='flex gap-2 w-full mt-4 pt-4'>
-            <Link to="/focus-room" className='flex-1'>
-              <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
-                <span>Enter Focus Room</span>
-                <ArrowRight size={20} />
-              </GradientButton>
-            </Link>
-            <Link to="/trackers/daily-tasks" className='flex-1'>
-              <GradientButton className='w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]' data-testid="plan-now-btn">
-                <span>Add To Today's Plan</span> <ArrowRight size={20}/>
-              </GradientButton>
-            </Link>
-          </div>
-        </div>)}
+              )}
+            </div>
+            <div className='flex gap-2 w-full mt-4 pt-4'>
+              <Link to="/focus-room" className='flex-1'>
+                <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
+                  <span>Enter Focus Room</span>
+                  <ArrowRight size={20} />
+                </GradientButton>
+              </Link>
+              <Link to="/trackers/daily-tasks" className='flex-1'>
+                <GradientButton className='w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]' data-testid="plan-now-btn">
+                  <span>Add To Today's Plan</span> <ArrowRight size={20} />
+                </GradientButton>
+              </Link>
+            </div>
+          </div>)}
 
         {/* Today's Tasks */}
         {hasPlannedTasks ? (

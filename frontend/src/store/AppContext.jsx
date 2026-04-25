@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { goalAPI, projectAPI, taskAPI, habitAPI, dailyPlanAPI, statsAPI, notebookAPI, pageAPI } from '../api/apiService';
+import { goalAPI, projectAPI, taskAPI, habitAPI, dailyPlanAPI, statsAPI, notebookAPI, pageAPI, authAPI } from '../api/apiService';
 import { showToast } from '../utils/toastHelper';
 import { useRef } from 'react';
 
@@ -953,6 +953,7 @@ export const AppProvider = ({ children }) => {
     dailyTasks,
     dailyPlan,
     scores,
+    updateUser,
     addGoal,
     addProject,
     addTask,

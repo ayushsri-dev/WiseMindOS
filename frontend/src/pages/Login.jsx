@@ -39,6 +39,7 @@ const Login = () => {
           name: response.name || 'User',
           username: response.username,
           email: response.email,
+          bio: response.bio,
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
