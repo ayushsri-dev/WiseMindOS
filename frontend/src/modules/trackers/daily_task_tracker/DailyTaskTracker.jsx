@@ -637,7 +637,7 @@ const DailyTaskTracker = () => {
                   <h3 className="text-lg font-semibold text-white mb-4">Select Task to Add</h3>
                   {availableTasks.length > 0 ? (
                     <>
-                      <div className="space-y-2 mb-6 max-h-96 overflow-y-auto">
+                      <div className="space-y-2 mb-6 max-h-96 overflow-y-auto pr-3">
                         {availableTasks.map(task => (
                           <motion.div
                             key={task.id}
@@ -682,11 +682,11 @@ const DailyTaskTracker = () => {
                 <Card className='bg-white/5 border backdrop-blur-2xl border-white/10'>
                   <h3 className="text-lg font-semibold text-white mb-4">Suggested Habits</h3>
                   {suggestedHabits.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-3 mb-6 max-h-96 overflow-y-auto px-3">
                       {suggestedHabits.map(habit => (
                         <motion.div
                           key={habit.id}
-                          whileHover={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.005 }}
                           className="p-4 bg-gray-700/50 rounded-lg border border-gray-600 hover:border-green-500/50 transition-all"
                         >
                           <div className="flex items-center justify-between">
