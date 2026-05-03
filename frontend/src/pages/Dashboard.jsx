@@ -160,9 +160,9 @@ const Dashboard = () => {
     if (success) {
       // Reset form with updated values
       setNewProfile({
-        name: updates.name ?? user.name,
-        username: updates.username ?? user.username,
-        bio: updates.bio ?? user.bio,
+        name: formData.name ?? user.name,
+        username: formData.username ?? user.username,
+        bio: formData.bio ?? user.bio,
         profile_picture: null
       });
 
@@ -199,7 +199,7 @@ const Dashboard = () => {
               {/* Image div  */}
               <div className='h-30 w-30 rounded-full relative group border-6 border-black/15 shadow-[0_0_40px_rgba(99,102,241,0.2)] shrink-0'>
                 <img src={user.profile_picture || profile_pic} className='w-full h-full object-cover rounded-full' alt="" />
-                <div className='w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100'>
+                <div onClick={()=>setShowEditProfile(true)} className='w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100'>
                   <div className='h-full w-full flex items-center justify-center'>
                     <Camera size={18} className='text-white' />
                   </div>

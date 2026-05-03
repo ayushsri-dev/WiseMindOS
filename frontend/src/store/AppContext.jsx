@@ -185,16 +185,14 @@ export const AppProvider = ({ children }) => {
 
   const updateUser = async (updates) => {
     try {
+      if(loading) return;
       setLoading(true);
 
       const response = await authAPI.update(updates);
 
       if (response.success) {
         // ✅ Update user state globally
-        setUser(prev => ({
-          ...prev,
-          ...response.user
-        }));
+        setUser(response.user);
 
         showToast({
           message: response.message || 'Profile updated successfully',
