@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, ArrowRightIcon, UserCog, UserPen, LucideTrophy } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, ArrowRightIcon, UserCog, UserPen, LucideTrophy, Pencil } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -43,7 +43,7 @@ const Dashboard = () => {
     calculateDisciplineScore
   } = useApp();
 
-  const [newProfile, setNewProfile] = useState({ name: user.name, username: user.username, bio: user.bio });
+  const [newProfile, setNewProfile] = useState({ name: user.name, username: user.username, bio: user.bio, profile_picture: null });
 
   const navigate = useNavigate();
 
@@ -645,6 +645,20 @@ const Dashboard = () => {
       {/* Edit Profile Modal */}
       <Modal isOpen={showEditProfile} onClose={() => setShowEditProfile(false)} title="Edit Profile Info">
         <form onSubmit={handleEditProfile} className="space-y-4">
+          {/* Profile Picture */}
+          <div className='flex flex-col items-start gap-3'>
+            <label htmlFor="profile_picture" className='block text-gray-300 text-sm font-medium mb-2'>
+              Profile Picture
+              <input hidden type="file" accept='image/*' id='profile_picture' className='w-full p-3 border border-gray-200 rounded-lg' onChange={(e) => setNewProfile({ ...newProfile, profile_picture: e.target.files[0] })} />
+
+              <div className='group/profile relative'>
+                <img src={newProfile.profile_picture ? URL.createObjectURL(newProfile.profile_picture) : user.profile_picture || profile_pic} alt="" className='w-24 h-24 rounded-full object-cover mt-2' />
+                <div className='absolute hidden cursor-pointer group-hover/profile:flex top-0 left-0 right-0 bottom-0 bg-black/20 rounded-full items-center justify-center'>
+                  <Pencil className='w-5 h-5 text-white' />
+                </div>
+              </div>
+            </label>
+          </div>
           <InputField
             label="Name (Full Name)"
             value={newProfile.name}
