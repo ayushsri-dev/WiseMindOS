@@ -185,7 +185,6 @@ export const AppProvider = ({ children }) => {
 
   const updateUser = async (updates) => {
     try {
-      // if (loading) return;
       setLoading(true);
 
       const response = await authAPI.update(updates);
