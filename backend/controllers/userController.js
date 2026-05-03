@@ -149,50 +149,6 @@ const updateUser = async (req, res) => {
         }
 
 
-        // const profile = req.files.profile && req.files.profile[0]
-        // const cover = req.files.cover && req.files.cover[0]
-        // const profile = req.files?.profile?.[0]
-        // const cover = req.files?.cover?.[0]
-
-        // if(profile){
-        //     const buffer = fs.readFileSync(profile.path)
-        //     const response = await imagekit.upload({
-        //         file: buffer,
-        //         fileName: profile.originalname,
-        //     })
-
-        //     const url = imagekit.url({
-        //         path: response.filePath,
-        //         transformation: [
-        //             {quality: 'auto'},
-        //             {format: 'webp'},
-        //             {width: '512'}
-        //         ]
-        //     })
-        //     user.profile_picture = url;
-        //     isModified = true;
-        // }
-        
-        // if(cover){
-        //     const buffer = fs.readFileSync(cover.path)
-        //     const response = await imagekit.upload({
-        //         file: buffer,
-        //         fileName: cover.originalname,
-        //     })
-
-        //     const url = imagekit.url({
-        //         path: response.filePath,
-        //         transformation: [
-        //             {quality: 'auto'},
-        //             {format: 'webp'},
-        //             {width: '1280'}
-        //         ]
-        //     })
-        //     user.cover_photo = url;
-        //     isModified = true;
-        // }
-
-
         if (!isModified) {
             return res.json({ success: true, message: "No changes made" });
         }
@@ -208,7 +164,6 @@ const updateUser = async (req, res) => {
                 username: updatedUser.username,
                 bio: updatedUser.bio,
                 email: updatedUser.email,
-                // profile_picture: updatedUser.profile_picture,
             }
         });
 
@@ -223,7 +178,6 @@ const updateUserProfilePic = async (req, res) => {
     try {
 
         const userId = req.body.userId; // coming from middleware
-        // const { name, username, bio } = req.body;
 
         // Find current user
         const user = await userModel.findById(userId);
@@ -233,39 +187,9 @@ const updateUserProfilePic = async (req, res) => {
 
         let isModified = false;
 
-        // // If username is being changed → check uniqueness
-        // if (username && username !== user.username) {
-        //     const existingUsername = await userModel.findOne({
-        //         username,
-        //         _id: { $ne: userId }
-        //     });
-        //     if (existingUsername) {
-        //         return res.json({
-        //             success: false,
-        //             message: "Username already taken. Try another!"
-        //         });
-        //     }
-        // }
 
-        // // Update only allowed fields
-        // if (name && name !== user.name) {
-        //     user.name = name;
-        //     isModified = true;
-        // }
-        // if (username && username !== user.username) {
-        //     user.username = username;
-        //     isModified = true;
-        // }
-        // if (bio !== undefined && bio !== user.bio) {
-        //     user.bio = bio;
-        //     isModified = true;
-        // }
-
-
-        const profile = req.files.profile && req.files.profile[0]
-        // const cover = req.files.cover && req.files.cover[0]
-        // const profile = req.files?.profile?.[0]
-        // const cover = req.files?.cover?.[0]
+        const profile = req.files.profile && req.files.profile[0];
+        // const cover = req.files.cover && req.files.cover[0];
 
         if(profile){
             const buffer = fs.readFileSync(profile.path)
@@ -317,10 +241,6 @@ const updateUserProfilePic = async (req, res) => {
             success: true,
             message: "Profile Picture updated successfully",
             user: {
-                // name: updatedUser.name,
-                // username: updatedUser.username,
-                // bio: updatedUser.bio,
-                // email: updatedUser.email,
                 profile_picture: updatedUser.profile_picture,
             }
         });
