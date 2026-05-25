@@ -1,7 +1,11 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+
+import dns from 'node:dns/promises';
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 import connectDB from './config/mongodb.js';
-import 'dotenv/config';
 import userRouter from './routes/userRoute.js';
 import goalRouter from './routes/goalRoute.js';
 import projectRouter from './routes/projectRoute.js';
@@ -13,7 +17,7 @@ import pageRouter from './routes/pageRoute.js';
 import weeklyStatRouter from './routes/weeklyStatRoute.js';
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 connectDB();
 
 app.use(express.json());

@@ -4,7 +4,11 @@ const connectDB = async()=> {
     mongoose.connection.on('connected', ()=>{
         console.log("DataBase Connected Successfully!")
     })
-    await mongoose.connect(`${process.env.MONGODB_URL}/wise-mind-os`)
+    const connectionOptions = {};
+    if (process.env.DB_NAME) {
+        connectionOptions.dbName = process.env.DB_NAME;
+    }
+    await mongoose.connect(process.env.MONGO_URI, connectionOptions)
 }
 
 export default connectDB;
