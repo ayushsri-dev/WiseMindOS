@@ -9,8 +9,8 @@ import { OAuth2Client } from 'google-auth-library';
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET)
-}
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+};
 
 
 
@@ -68,23 +68,55 @@ const googleLogin = async (req, res) => {
 
         // Extract user information from the token
         const payload = ticket.getPayload();
-        const { email, name, picture, sub: googleId } = payload;
-        
-        let user = await userModel.findOne({ $or: [{ googleId }, { email }] });
+        const { email, name, picture, sub: googleId, email_verified } = payload;
 
-        // If they are new, build their profile with a unique username
-        if (!user) {
-            const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
-            const randomDigits = Math.floor(1000 + Math.random() * 9000);
-            const generatedUsername = `${baseUsername}${randomDigits}`;
-
-            user = await userModel.create({
-                name: name || baseUsername,
-                username: generatedUsername,
-                email,
-                googleId,
-                profile_picture: picture || ''
+        if (!email_verified) {
+            return res.status(400).json({
+                success: false,
+                message: "Access denied. Your Google email address is not verified.",
             });
+        }
+        
+        let user = await userModel.findOne({ googleId });
+
+        if (!user) {
+            const existingEmailUser = await userModel.findOne({ email });
+
+            if (existingEmailUser) {
+                // If an account with the same email exists but isn't linked to Google, link it now
+                existingEmailUser.googleId = googleId;
+                
+                // \If the existing account doesn't have a profile picture, use the one from Google
+                if (!existingEmailUser.profile_picture) {
+                    existingEmailUser.profile_picture = picture || '';
+                }
+                
+                await existingEmailUser.save();
+                user = existingEmailUser; // Use the existing user for token creation and response
+            } else {
+            
+                const baseUsername = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+                let generatedUsername = `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`;
+                let isUnique = false;
+
+                // Loop until we find a username that doesn't exist in the database
+                while (!isUnique) {
+                    const checkUsernameConflict = await userModel.findOne({ username: generatedUsername });
+                    if (!checkUsernameConflict) {
+                        isUnique = true; 
+                    } else {
+                        generatedUsername = `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`;
+                    }
+                }
+
+                user = await userModel.create({
+                    name: name || baseUsername,
+                    username: generatedUsername,
+                    email,
+                    googleId,
+                    profile_picture: picture || ''
+                });
+            }
         }
 
         // create a JWT token for the user
