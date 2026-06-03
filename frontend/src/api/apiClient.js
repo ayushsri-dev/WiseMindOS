@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
-const axiosInstance = axios.create({
+const apiClient = axios.create({
     baseURL: backendURL,
     headers: {
         'Content-Type': 'application/json'
@@ -10,11 +10,11 @@ const axiosInstance = axios.create({
 });
 
 // Request interceptor to attach token
-axiosInstance.interceptors.request.use(
+apiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
         if (token) {
-            config.headers.token = token;
+            config.headers.Authorization = `Bearer ${token}`;
         }
         if (config.data instanceof FormData) {
             delete config.headers['Content-Type'];
@@ -27,7 +27,7 @@ axiosInstance.interceptors.request.use(
 );
 
 // Response interceptor for error handling
-axiosInstance.interceptors.response.use(
+apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
@@ -40,4 +40,4 @@ axiosInstance.interceptors.response.use(
     }
 );
 
-export default axiosInstance;
+export default apiClient;
