@@ -9,6 +9,10 @@ import AppLayout from './layouts/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
 import Roadmap from './pages/Roadmap';
+import Features from './pages/Features';
+import Careers from './pages/Careers';
+import Contact from './pages/Contact';
+import About from './pages/About'; // <-- IMPORT ABOUT PAGE HERE
 
 
 import FutureTwin from './modules/simulator_room/FutureTwin';
@@ -23,11 +27,14 @@ import Library from './modules/library_room/Library';
 
 import { useApp } from './store/AppContext';
 import { ToastContainer } from 'react-toastify';
+import ErrorBoundary from './components/ErrorBoundary';
+import ErrorPage from './pages/ErrorPage';
 
-  function App() {
-    const { token } = useApp();
-    return (
-      <>
+function App() {
+  const { token } = useApp();
+
+  return (
+    <ErrorBoundary fallback={<ErrorPage />}>
         <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           {/* Public Routes */}
@@ -36,7 +43,11 @@ import { ToastContainer } from 'react-toastify';
           <Route path="/signup" element={<Signup />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/report" element={<Reports />} />
+          <Route path="/features" element={<Features />} />
           <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} /> {/* <-- ADD ROUTE HERE */}
 
           {/* Protected Routes with AppLayout */}
           <Route element={<AppLayout />}>
@@ -57,8 +68,8 @@ import { ToastContainer } from 'react-toastify';
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </>
-    );
-  }
+    </ErrorBoundary>
+  );
+}
 
 export default App;

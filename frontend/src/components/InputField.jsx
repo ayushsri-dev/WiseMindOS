@@ -16,7 +16,7 @@ const InputField = ({
   const generatedId = useId();
 
   const isPassword = type === "password";
-  const inputId = id ?? `input-${generatedId}`;
+  const inputId = id ?? props.name ?? `input-${generatedId}`;
 
   return (
     <div className={`w-full ${className}`}>
@@ -36,17 +36,16 @@ const InputField = ({
           placeholder={placeholder}
           required={required}
           className="
-            w-full bg-gray-700 text-white border border-gray-600 rounded-lg 
+            w-full bg-gray-700 text-white border border-gray-600 rounded-lg
             px-4 py-3 pr-10
-            focus:outline-none focus:ring-2 focus:ring-indigo-500 
-            focus:border-transparent 
+            focus:outline-none focus:ring-2 focus:ring-indigo-500
+            focus:border-transparent
             focus:shadow-[0_0_15px_rgba(99,102,241,0.5)]
             transition-all
           "
           {...props}
         />
 
-        {/* Eye Toggle */}
         {isPassword && (
           <button
             type="button"

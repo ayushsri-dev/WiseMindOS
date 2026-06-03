@@ -957,7 +957,7 @@ export const AppProvider = ({ children }) => {
 
   // AUTO SAVE DAILY STATS
   useEffect(() => {
-    if (!dailyPlan) return;
+    if (!token || !user || !dailyPlan) return;
 
     const saveStats = async () => {
       try {
@@ -976,7 +976,7 @@ export const AppProvider = ({ children }) => {
 
     saveStats();
 
-  }, [dailyPlan]);
+  }, [token, user, dailyPlan]);
 
   const value = {
     token,

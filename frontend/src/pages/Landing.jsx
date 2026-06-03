@@ -154,6 +154,17 @@ hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer">
               </Motion.div>
             ))}
           </div>
+
+          <div className="mt-10 text-center">
+            <Link to="/features">
+              <GradientButton className="w-full sm:w-auto" data-testid="explore-features-page-btn">
+                <span className="flex items-center justify-center gap-2">
+                  Explore All Features
+                  <ArrowRight size={18} />
+                </span>
+              </GradientButton>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -316,7 +327,7 @@ hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shad
               <h3 className="text-white font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li>
-                  <Link to="/#features" className="hover:text-white transition cursor-pointer">
+                  <Link to="/features" className="hover:text-white transition cursor-pointer">
                     Features
                   </Link>
                 </li>

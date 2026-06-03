@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, UserPen, LucideTrophy, Pencil } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, UserPen, LucideTrophy, Pencil, Activity, Flame, BarChart3 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -104,6 +104,93 @@ const Dashboard = () => {
   const topGoals = goals.slice(0, 4);
   const topProjects = projects.slice(0, 4);
   const topHabits = habits.slice(0, 3);
+
+  const productivityInsights = useMemo(() => {
+    const completedDailyTasks = todayPlannedTasks.filter(task => task.completed).length;
+    const completedTasks = tasks.filter(task => task.completed || task.status === 'completed').length;
+    const completedHabits = habits.filter(habit => habit.completed).length;
+    const goalProgressValues = goals.map(goal => {
+      const progress = calculateGoalProgress(goal.id);
+      return progress || Number(goal.progress) || 0;
+    });
+    const avgGoalProgress = goalProgressValues.length
+      ? Math.round(goalProgressValues.reduce((sum, value) => sum + value, 0) / goalProgressValues.length)
+      : 0;
+    const habitCompletion = habits.length
+      ? Math.round((completedHabits / habits.length) * 100)
+      : 0;
+    const taskCompletion = tasks.length
+      ? Math.round((completedTasks / tasks.length) * 100)
+      : 0;
+    const consistencyDays = weeklyData.filter(day => {
+      const dailyScore = Math.round(((day.productivity || 0) + (day.discipline || 0)) / 2);
+      return dailyScore >= 70;
+    }).length;
+    const consistencyScore = weeklyData.length
+      ? Math.round((consistencyDays / weeklyData.length) * 100)
+      : productivityScore;
+    const firstHalf = weeklyData.slice(0, Math.ceil(weeklyData.length / 2));
+    const secondHalf = weeklyData.slice(Math.ceil(weeklyData.length / 2));
+    const avg = (items, key) => items.length
+      ? items.reduce((sum, item) => sum + (item[key] || 0), 0) / items.length
+      : 0;
+    const trendDelta = weeklyData.length > 1
+      ? Math.round(avg(secondHalf, 'productivity') - avg(firstHalf, 'productivity'))
+      : 0;
+    const heatmap = weeklyData.length
+      ? weeklyData.map(day => ({
+          name: day.name,
+          value: Math.round(((day.productivity || 0) + (day.discipline || 0)) / 2)
+        }))
+      : [
+          { name: 'Today', value: productivityScore },
+        ];
+
+    return {
+      completedDailyTasks,
+      avgGoalProgress,
+      habitCompletion,
+      taskCompletion,
+      consistencyScore,
+      trendDelta,
+      heatmap,
+    };
+  }, [todayPlannedTasks, tasks, habits, goals, weeklyData, productivityScore, calculateGoalProgress]);
+
+  const insightCards = [
+    {
+      title: 'Weekly Consistency',
+      value: `${productivityInsights.consistencyScore}%`,
+      detail: `${productivityInsights.heatmap.filter(day => day.value >= 70).length}/${productivityInsights.heatmap.length} strong days`,
+      icon: <Flame size={22} />,
+      accent: 'from-amber-500/25 to-orange-500/10',
+      text: 'text-amber-300',
+    },
+    {
+      title: 'Habit Completion',
+      value: `${productivityInsights.habitCompletion}%`,
+      detail: `${habits.filter(habit => habit.completed).length}/${habits.length || 0} habits done`,
+      icon: <Activity size={22} />,
+      accent: 'from-emerald-500/25 to-teal-500/10',
+      text: 'text-emerald-300',
+    },
+    {
+      title: 'Goal Progress',
+      value: `${productivityInsights.avgGoalProgress}%`,
+      detail: `${goals.length} active goals tracked`,
+      icon: <Target size={22} />,
+      accent: 'from-sky-500/25 to-cyan-500/10',
+      text: 'text-sky-300',
+    },
+    {
+      title: 'Task Completion',
+      value: `${productivityInsights.taskCompletion}%`,
+      detail: `${productivityInsights.completedDailyTasks}/${todayPlannedTasks.length || 0} planned today`,
+      icon: <BarChart3 size={22} />,
+      accent: 'from-fuchsia-500/25 to-rose-500/10',
+      text: 'text-fuchsia-300',
+    },
+  ];
 
   const handleEditProfile = async (e) => {
     e.preventDefault();
@@ -293,6 +380,83 @@ const Dashboard = () => {
           )}
         </div>
 
+        {/* Productivity Insights */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div>
+              <h2 className="text-xl font-bold text-white">Productivity Insights</h2>
+              <p className="text-sm text-gray-400">Live signals from your goals, habits, tasks, and weekly rhythm</p>
+            </div>
+            <div className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 bg-white/5 ${productivityInsights.trendDelta >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
+              <TrendingUp size={16} />
+              <span className="text-sm font-semibold">
+                {productivityInsights.trendDelta >= 0 ? '+' : ''}{productivityInsights.trendDelta}% trend
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
+            {insightCards.map((insight, index) => (
+              <Motion.div
+                key={insight.title}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className={`rounded-2xl p-4 border border-white/10 bg-gradient-to-br ${insight.accent} backdrop-blur-xl shadow-[0_0_28px_rgba(99,102,241,0.12)]`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-gray-400">{insight.title}</p>
+                    <p className="text-3xl font-bold text-white mt-1">{insight.value}</p>
+                  </div>
+                  <div className={`p-2 rounded-xl bg-white/10 ${insight.text}`}>
+                    {insight.icon}
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mt-4">{insight.detail}</p>
+              </Motion.div>
+            ))}
+          </div>
+
+          <Card className="bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">Weekly completion heatmap</h3>
+                <p className="text-sm text-gray-400">
+                  Daily blend of productivity and discipline scores.
+                </p>
+              </div>
+              <div className="grid grid-cols-7 gap-2 w-full lg:w-auto">
+                {productivityInsights.heatmap.map(day => (
+                  <div key={day.name} className="flex flex-col items-center gap-2">
+                    <div
+                      className={`w-full min-w-9 h-12 rounded-xl border flex items-end overflow-hidden ${
+                        day.value >= 80
+                          ? 'border-emerald-400/40 bg-emerald-400/15'
+                          : day.value >= 60
+                            ? 'border-amber-400/40 bg-amber-400/15'
+                            : 'border-rose-400/40 bg-rose-400/15'
+                      }`}
+                      title={`${day.name}: ${day.value}%`}
+                    >
+                      <div
+                        className={`w-full ${
+                          day.value >= 80
+                            ? 'bg-emerald-400'
+                            : day.value >= 60
+                              ? 'bg-amber-400'
+                              : 'bg-rose-400'
+                        }`}
+                        style={{ height: `${Math.max(12, day.value)}%` }}
+                      />
+                    </div>
+                    <span className="text-[11px] text-gray-400">{day.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
 
         {/* Weekly Analytics */}
         <h2 className="text-xl font-bold text-white mb-4">Weekly Analytics</h2>
