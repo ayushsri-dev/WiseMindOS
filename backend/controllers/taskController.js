@@ -2,7 +2,7 @@ import taskModel from '../models/taskModel.js';
 import dailyPlanModel from '../models/dailyPlanModel.js';
 
 // Create Task
-const createTask = async (req, res) => {
+const createTask = async (req, res, next) => {
     try {
         const { title, goalId, projectId, isImportant, deadline, createdFrom } = req.body;
         const userId = req.body.userId;
@@ -26,26 +26,24 @@ const createTask = async (req, res) => {
         res.json({ success: true, task: newTask, message: 'Task Created Successfully !' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Get All Tasks
-const getTasks = async (req, res) => {
+const getTasks = async (req, res, next) => {
     try {
         const userId = req.body.userId;
         const tasks = await taskModel.find({ userId });
         res.json({ success: true, tasks });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Update Task
-const updateTask = async (req, res) => {
+const updateTask = async (req, res, next) => {
     try {
         const { taskId, title, goalId, projectId, isImportant, deadline, completed } = req.body;
         const userId = req.body.userId;
@@ -70,13 +68,12 @@ const updateTask = async (req, res) => {
         res.json({ success: true, task, message: 'Task Updated !' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Toggle Task Completion (SSOT - Updates Task first, then DailyPlan)
-const toggleTaskCompletion = async (req, res) => {
+const toggleTaskCompletion = async (req, res, next) => {
     try {
         const { taskId } = req.body;
         const userId = req.body.userId;
@@ -112,13 +109,12 @@ const toggleTaskCompletion = async (req, res) => {
         res.json({ success: true, task });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Delete Task
-const deleteTask = async (req, res) => {
+const deleteTask = async (req, res, next) => {
     try {
         const { taskId } = req.body;
         const userId = req.body.userId;
@@ -141,8 +137,7 @@ const deleteTask = async (req, res) => {
         res.json({ success: true, message: 'Task deleted successfully' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 

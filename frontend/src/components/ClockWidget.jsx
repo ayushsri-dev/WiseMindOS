@@ -1,17 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { format, getHours } from 'date-fns';
 import { Clock } from 'lucide-react';
 import { motion } from "framer-motion";
+
+const normalizeTimeZone = (timeZone) =>
+  timeZone === 'Asia/Calcutta' ? 'Asia/Kolkata' : timeZone;
+
+const getTimezoneInfo = (date) => {
+  const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
+
+  const offsetParts = new Intl.DateTimeFormat(undefined, {
+    timeZoneName: 'shortOffset',
+  }).formatToParts(date);
+  const offset = offsetParts.find((p) => p.type === 'timeZoneName')?.value ?? '';
+
+  return { timeZone: normalizeTimeZone(timeZone), offset };
+};
 
 const ClockWidget = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
+    const tick = () => setCurrentTime(new Date());
+
+    const timer = setInterval(tick, 1000);
+    document.addEventListener('visibilitychange', tick);
+    window.addEventListener('focus', tick);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', tick);
+      window.removeEventListener('focus', tick);
+    };
   }, []);
+
+  const { timeZone, offset } = useMemo(
+    () => getTimezoneInfo(currentTime),
+    [currentTime]
+  );
+
+  const dateTimeLabel = `${format(currentTime, 'EEEE, MMMM dd, yyyy')} • ${timeZone}${offset ? ` (${offset})` : ''}`;
 
   const getGreeting = () => {
     const hour = getHours(currentTime);
@@ -36,9 +64,9 @@ const ClockWidget = () => {
         <h3 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 mb-1">
           {getGreeting()}
         </h3>
-        <p className="text-gray-400 text-sm flex items-center gap-2">
-          <Clock size={14} className="text-indigo-400" />
-          {format(currentTime, 'EEEE, MMMM dd, yyyy')}
+        <p className="text-gray-400 text-sm flex items-start gap-2 text-center md:text-left max-w-full">
+          <Clock size={14} className="text-indigo-400 shrink-0 mt-0.5" />
+          <span className="leading-relaxed break-words">{dateTimeLabel}</span>
         </p>
       </div>
 

@@ -17,7 +17,7 @@ const isToday = (date) => {
 };
 
 // Get Today's Daily Plan (or create if not exists)
-const getTodayPlan = async (req, res) => {
+const getTodayPlan = async (req, res, next) => {
     try {
         const userId = req.body.userId;
         const today = new Date().toISOString().split('T')[0];
@@ -37,13 +37,12 @@ const getTodayPlan = async (req, res) => {
         res.json({ success: true, dailyPlan });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Add Task to Daily Plan
-const addToDailyPlan = async (req, res) => {
+const addToDailyPlan = async (req, res, next) => {
     try {
         const { source, taskId, habitId, title, startTime, endTime, isImportant } = req.body;
         const userId = req.body.userId;
@@ -117,13 +116,12 @@ const addToDailyPlan = async (req, res) => {
         res.json({ success: true, dailyPlan, message: 'Task added for today' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Remove from Daily Plan
-const removeFromDailyPlan = async (req, res) => {
+const removeFromDailyPlan = async (req, res, next) => {
     try {
         const { plannedTaskId } = req.body;
         const userId = req.body.userId;
@@ -146,13 +144,12 @@ const removeFromDailyPlan = async (req, res) => {
         res.json({ success: true, dailyPlan, message: 'Task removed successfully !' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Toggle Daily Plan Task Completion (CRITICAL - Updates source first, then reflects)
-const toggleDailyPlanTask = async (req, res) => {
+const toggleDailyPlanTask = async (req, res, next) => {
     try {
         const { plannedTaskId } = req.body;
         const userId = req.body.userId;
@@ -231,13 +228,12 @@ const toggleDailyPlanTask = async (req, res) => {
         res.json({ success: true, dailyPlan });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Clear Daily Plan
-const clearDailyPlan = async (req, res) => {
+const clearDailyPlan = async (req, res, next) => {
     try {
         const userId = req.body.userId;
         const today = new Date().toISOString().split('T')[0];
@@ -253,8 +249,7 @@ const clearDailyPlan = async (req, res) => {
         res.json({ success: true, dailyPlan });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 

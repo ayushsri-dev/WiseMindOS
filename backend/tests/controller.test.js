@@ -14,6 +14,11 @@ const originals = [];
 function mockResponse() {
     return {
         body: undefined,
+        statusCode: 200,
+        status(code) {
+            this.statusCode = code;
+            return this;
+        },
         json(payload) {
             this.body = payload;
             return payload;
@@ -44,8 +49,28 @@ test('createGoal returns a validation response when title is missing', async () 
     });
 });
 
+test('createGoal rejects duplicate titles for the same user', async () => {
+    const res = mockResponse();
+    replaceProperty(goalModel, 'find', async () => [
+        { title: 'Software Developer' }
+    ]);
+
+    await createGoal({
+        body: {
+            userId: 'user-1',
+            title: '  software developer '
+        }
+    }, res);
+
+    assert.deepEqual(res.body, {
+        success: false,
+        message: 'A goal with this title already exists'
+    });
+});
+
 test('createGoal persists default values for a valid goal', async () => {
     const res = mockResponse();
+    replaceProperty(goalModel, 'find', async () => []);
     let savedGoal;
     replaceProperty(goalModel.prototype, 'save', async function save() {
         savedGoal = this;
@@ -61,6 +86,7 @@ test('createGoal persists default values for a valid goal', async () => {
 
     assert.equal(res.body.success, true);
     assert.equal(res.body.message, 'Goal Created Successfully !');
+    assert.equal(savedGoal.title, 'Ship open-source work');
     assert.equal(savedGoal.type, 'personal');
     assert.equal(savedGoal.description, '');
     assert.equal(savedGoal.deadline, null);
@@ -140,7 +166,7 @@ test('authUser stores decoded user id and calls next for a valid token', async (
     const previousSecret = process.env.JWT_SECRET;
     process.env.JWT_SECRET = 'test-secret';
     const token = jwt.sign({ id: 'user-123' }, process.env.JWT_SECRET);
-    const req = { headers: { token }, body: {} };
+    const req = { headers: { authorization: `Bearer ${token}` }, body: {} };
     let nextCalled = false;
 
     try {
