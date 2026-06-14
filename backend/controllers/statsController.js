@@ -4,49 +4,26 @@ import dailyStatsModel from '../models/dailyStatsModel.js';
 const saveDailyStats = async (req, res) => {
   try {
     const { productivity, discipline } = req.body;
-    const userId = req.body.userId || req.headers.userid;
+    const userId = req.user.id;
 
     if (productivity === undefined || discipline === undefined) {
       return res.json({ success: false, message: 'Scores are required' });
     }
 
-    // ✅ Normalize date (IMPORTANT for unique index)
-    const start = new Date();
-    start.setUTCHours(0, 0, 0, 0);
-
-    const end = new Date();
-    end.setUTCHours(23, 59, 59, 999);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     await dailyStatsModel.findOneAndUpdate(
-      {
-        userId,
-        date: { $gte: start, $lte: end }
-      },
+      { userId, date: today },
       {
         productivity,
-        discipline,
-        date: start // always save normalized
+        discipline
       },
       {
         upsert: true,
         new: true
       }
     );
-    
-    // const today = new Date();
-    // today.setHours(0, 0, 0, 0);
-
-    // await dailyStatsModel.findOneAndUpdate(
-    //   { userId, date: today },
-    //   {
-    //     productivity,
-    //     discipline
-    //   },
-    //   {
-    //     upsert: true,
-    //     new: true
-    //   }
-    // );
 
 
     res.json({ success: true });
@@ -61,11 +38,14 @@ const saveDailyStats = async (req, res) => {
 // ✅ GET LAST 7 DAYS STATS
 const getWeeklyStats = async (req, res) => {
   try {
-    const userId = req.body.userId || req.headers.userid;
+    const userId = req.user.id;
+
+    const lastWeek = new Date();
+    lastWeek.setDate(lastWeek.getDate() - 7);
 
     const stats = await dailyStatsModel
-      .find({ userId })
-      .sort({ date: 1 }); // oldest → newest
+      .find({ userId, date: { $gte: lastWeek } })
+      .sort({ date: 1 });
 
     res.json({ success: true, data: stats });
 

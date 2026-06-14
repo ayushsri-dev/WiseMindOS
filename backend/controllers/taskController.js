@@ -5,7 +5,7 @@ import dailyPlanModel from '../models/dailyPlanModel.js';
 const createTask = async (req, res) => {
     try {
         const { title, goalId, projectId, isImportant, deadline, createdFrom } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!title) {
             return res.json({ success: false, message: 'Title is required' });
@@ -34,7 +34,7 @@ const createTask = async (req, res) => {
 // Get All Tasks
 const getTasks = async (req, res) => {
     try {
-        const userId = req.body.userId;
+        const userId = req.user.id;
         const tasks = await taskModel.find({ userId });
         res.json({ success: true, tasks });
 
@@ -48,7 +48,7 @@ const getTasks = async (req, res) => {
 const updateTask = async (req, res) => {
     try {
         const { taskId, title, goalId, projectId, isImportant, deadline, completed } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!taskId) {
             return res.json({ success: false, message: 'Task ID is required' });
@@ -79,7 +79,7 @@ const updateTask = async (req, res) => {
 const toggleTaskCompletion = async (req, res) => {
     try {
         const { taskId } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!taskId) {
             return res.json({ success: false, message: 'Task ID is required' });
@@ -121,7 +121,7 @@ const toggleTaskCompletion = async (req, res) => {
 const deleteTask = async (req, res) => {
     try {
         const { taskId } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!taskId) {
             return res.json({ success: false, message: 'Task ID is required' });

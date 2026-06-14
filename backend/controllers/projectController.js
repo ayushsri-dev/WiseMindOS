@@ -5,7 +5,7 @@ import taskModel from '../models/taskModel.js';
 const createProject = async (req, res) => {
     try {
         const { title, goalId, deadline, description } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!title) {
             return res.json({ success: false, message: 'Title is required' });
@@ -31,7 +31,7 @@ const createProject = async (req, res) => {
 // Get All Projects
 const getProjects = async (req, res) => {
     try {
-        const userId = req.body.userId;
+        const userId = req.user.id;
         const projects = await projectModel.find({ userId });
 
         // Calculate progress dynamically for each project
@@ -60,7 +60,7 @@ const getProjects = async (req, res) => {
 const updateProject = async (req, res) => {
     try {
         const { projectId, title, goalId, deadline, description } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!projectId) {
             return res.json({ success: false, message: 'Project ID is required' });
@@ -89,7 +89,7 @@ const updateProject = async (req, res) => {
 const deleteProject = async (req, res) => {
     try {
         const { projectId } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!projectId) {
             return res.json({ success: false, message: 'Project ID is required' });

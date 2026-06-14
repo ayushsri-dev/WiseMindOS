@@ -4,7 +4,7 @@ import pageModel from "../models/pageModel.js";
 // ➤ Create Notebook (max 40)
 export const createNotebook = async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.user.id;
     const { name } = req.body;
 
     if (!name) {
@@ -35,7 +35,7 @@ export const createNotebook = async (req, res) => {
 // ➤ Get all notebooks of user
 export const getNotebooks = async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.user.id;
 
     const notebooks = await notebookModel
       .find({ userId })
@@ -52,7 +52,7 @@ export const getNotebooks = async (req, res) => {
 export const updateNotebook = async (req, res) => {
   try {
     const { notebookId, name } = req.body;
-    const userId = req.body.userId;
+    const userId = req.user.id;
 
     if (!notebookId || !name) {
       return res.json({ success: false, message: "NotebookId and name required" });
@@ -80,7 +80,7 @@ export const updateNotebook = async (req, res) => {
 export const deleteNotebook = async (req, res) => {
   try {
     const { notebookId } = req.body;
-    const userId = req.body.userId;
+    const userId = req.user.id;
 
     const notebook = await notebookModel.findOneAndDelete({
       _id: notebookId,

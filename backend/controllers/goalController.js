@@ -5,7 +5,7 @@ import taskModel from '../models/taskModel.js';
 const createGoal = async (req, res) => {
     try {
         const { title, type, description, deadline } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!title) {
             return res.json({ success: false, message: 'Title is required' });
@@ -31,7 +31,7 @@ const createGoal = async (req, res) => {
 // Get All Goals
 const getGoals = async (req, res) => {
     try {
-        const userId = req.body.userId;
+        const userId = req.user.id;
         const goals = await goalModel.find({ userId });
 
         // Calculate progress dynamically for each goal
@@ -58,7 +58,7 @@ const getGoals = async (req, res) => {
 const updateGoal = async (req, res) => {
     try {
         const { goalId, title, type, description, deadline } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!goalId) {
             return res.json({ success: false, message: 'Goal ID is required' });
@@ -87,7 +87,7 @@ const updateGoal = async (req, res) => {
 const deleteGoal = async (req, res) => {
     try {
         const { goalId } = req.body;
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         if (!goalId) {
             return res.json({ success: false, message: 'Goal ID is required' });

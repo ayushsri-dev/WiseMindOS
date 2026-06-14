@@ -206,7 +206,7 @@ const registerUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
 
-        const userId = req.body.userId; // coming from middleware
+        const userId = req.user.id;
         const { name, username, bio } = req.body;
 
         // Find current user
@@ -274,7 +274,7 @@ const updateUser = async (req, res) => {
 const updateUserProfilePic = async (req, res) => {
     try {
 
-        const userId = req.body.userId; // coming from middleware
+        const userId = req.user.id;
 
         // Find current user
         const user = await userModel.findById(userId);

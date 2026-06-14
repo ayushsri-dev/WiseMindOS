@@ -4,7 +4,7 @@ import notebookModel from "../models/notebookModel.js";
 // ➤ Create Page (max 100 per notebook)
 export const createPage = async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.user.id;
     const { notebookId } = req.body;
 
     if (!notebookId) {
@@ -44,7 +44,7 @@ export const createPage = async (req, res) => {
 export const getPages = async (req, res) => {
   try {
     const { notebookId } = req.body;
-    const userId = req.body.userId;
+    const userId = req.user.id;
 
     const pages = await pageModel
       .find({ notebookId, userId })
@@ -62,7 +62,7 @@ export const getPages = async (req, res) => {
 export const updatePage = async (req, res) => {
   try {
     const { pageId, content } = req.body;
-    const userId = req.body.userId;
+    const userId = req.user.id;
 
     if (content.length > 10000) {
       return res.json({ success: false, message: "Max 10KB content allowed" });
@@ -93,7 +93,7 @@ export const updatePage = async (req, res) => {
 export const deletePage = async (req, res) => {
   try {
     const { pageId, notebookId } = req.body;
-    const userId = req.body.userId;
+    const userId = req.user.id;
 
     const page = await pageModel.findOneAndDelete({
       _id: pageId,
