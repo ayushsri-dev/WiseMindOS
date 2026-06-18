@@ -292,6 +292,9 @@ const Bag = () => {
                     if (!activePage) return;
                     await updatePage(activePage, currentPage.content || "");
                     showToast({ message: "Saved Content", status: "success" }); 
+                    //redirect to pages view after saving
+                    setView("pages");
+                    setActivePage(null);
                   } catch (error) {
                     showToast({ message: error.message || "Error Saving", status: "success" });
                   }
