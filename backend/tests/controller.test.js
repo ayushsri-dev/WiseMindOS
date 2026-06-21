@@ -6,6 +6,7 @@ import { createGoal, getGoals } from '../controllers/goalController.js';
 import { toggleTaskCompletion } from '../controllers/taskController.js';
 import authUser from '../middlewares/auth.js';
 import dailyPlanModel from '../models/dailyPlanModel.js';
+import { upload } from '../config/multer.js';
 import goalModel from '../models/goalModel.js';
 import taskModel from '../models/taskModel.js';
 
@@ -14,6 +15,11 @@ const originals = [];
 function mockResponse() {
     return {
         body: undefined,
+        statusCode: 200,
+        status(code) {
+            this.statusCode = code;
+            return this;
+        },
         json(payload) {
             this.body = payload;
             return payload;
@@ -140,7 +146,7 @@ test('authUser stores decoded user id and calls next for a valid token', async (
     const previousSecret = process.env.JWT_SECRET;
     process.env.JWT_SECRET = 'test-secret';
     const token = jwt.sign({ id: 'user-123' }, process.env.JWT_SECRET);
-    const req = { headers: { token }, body: {} };
+    const req = { headers: { authorization: `Bearer ${token}` }, body: {} };
     let nextCalled = false;
 
     try {
@@ -153,4 +159,9 @@ test('authUser stores decoded user id and calls next for a valid token', async (
 
     assert.equal(nextCalled, true);
     assert.equal(req.body.userId, 'user-123');
+});
+
+test('multer upload config enforces 5 MB file size limit', () => {
+    assert.ok(upload.limits);
+    assert.equal(upload.limits.fileSize, 5 * 1024 * 1024);
 });
