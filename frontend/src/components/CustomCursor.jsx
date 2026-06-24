@@ -24,8 +24,8 @@ export default function CustomCursor() {
     };
 
     const animate = () => {
-      ringX += (mouseX - ringX) * 0.15;
-      ringY += (mouseY - ringY) * 0.15;
+      ringX += (mouseX - ringX) * 0.6;
+      ringY += (mouseY - ringY) * 0.6;
       if (ringRef.current) {
         const size = ringRef.current.offsetWidth;
         ringRef.current.style.transform = `translate(${ringX - size / 2}px, ${ringY - size / 2}px)`;
