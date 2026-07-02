@@ -3,7 +3,6 @@ import { useKeyboardShortcuts } from '../utils/useKeyboardShortcuts';
 import { Outlet, Navigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import { useApp } from '../store/AppContext';
-import CustomCursor from "../components/CustomCursor";
 
 const AppLayout = () => {
   const { token } = useApp();
@@ -22,6 +21,7 @@ const AppLayout = () => {
       <CustomCursor />
       
       {/* Main App Workspace Router Outlet */}
+    <div className="min-h-screen bg-gray-900">
       <Outlet />
 
       {/* KEYBOARD SHORTCUTS CHEAT-SHEET MODAL */}
