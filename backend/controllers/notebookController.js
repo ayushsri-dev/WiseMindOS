@@ -1,6 +1,5 @@
 import notebookModel from "../models/notebookModel.js";
 import pageModel from "../models/pageModel.js";
-import { sanitizeField } from '../utils/sanitize.js';
 
 const buildNotebookReorderUpdate = (_notebook, index) => ({
   order: index + 1,
@@ -38,8 +37,19 @@ export const createNotebook = async (req, res, next) => {
     const userId = req.user.id;
     const { name } = req.body;
 
-    const { value: cleanName, error: nameError } = sanitizeField(name, 'notebookName', { required: true });
-    if (nameError) return res.json({ success: false, message: nameError });
+    if (!name || !name.trim()) {
+      return res.json({ success: false, message: "Name required" });
+    }
+
+    const trimmedName = name.trim();
+    const existing = await notebookModel.findOne({
+      userId,
+      name: new RegExp('^' + trimmedName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i')
+    });
+
+    if (existing) {
+      return res.json({ success: false, message: "A notebook with this name already exists" });
+    }
 
     const count = await notebookModel.countDocuments({ userId });
     if (count >= 40) {
@@ -48,9 +58,10 @@ export const createNotebook = async (req, res, next) => {
 
     const notebook = new notebookModel({
       userId,
-      name: cleanName,
+      name: trimmedName,
       order: count + 1
     });
+
     await notebook.save();
 
     res.json({ success: true, notebook });
@@ -83,16 +94,24 @@ export const updateNotebook = async (req, res, next) => {
     const { notebookId, name } = req.body;
     const userId = req.user.id;
 
-    if (!notebookId || !name) {
+    if (!notebookId || !name || !name.trim()) {
       return res.json({ success: false, message: "NotebookId and name required" });
     }
 
-    const { value: cleanName, error: nameError } = sanitizeField(name, 'notebookName', { required: true });
-    if (nameError) return res.json({ success: false, message: nameError });
+    const trimmedName = name.trim();
+    const existing = await notebookModel.findOne({
+      userId,
+      _id: { $ne: notebookId },
+      name: new RegExp('^' + trimmedName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i')
+    });
+
+    if (existing) {
+      return res.json({ success: false, message: "A notebook with this name already exists" });
+    }
 
     const notebook = await notebookModel.findOneAndUpdate(
       { _id: notebookId, userId },
-      { name: cleanName },
+      { name: trimmedName },
       { new: true }
     );
 
