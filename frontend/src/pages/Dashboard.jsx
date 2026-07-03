@@ -86,10 +86,10 @@ const Dashboard = () => {
     calculateDisciplineScore
   } = useApp();
 
-  const [newProfile, setNewProfile] = useState({ 
-    name: user?.name || '', 
-    username: user?.username || '', 
-    bio: user?.bio || '' 
+  const [newProfile, setNewProfile] = useState({
+    name: user?.name || '',
+    username: user?.username || '',
+    bio: user?.bio || ''
   });
   const [newProfilePic, setNewProfilePic] = useState(null);
   const [weeklyLoading, setWeeklyLoading] = useState(true);
@@ -208,12 +208,12 @@ const Dashboard = () => {
       : 0;
     const heatmap = weeklyData.length
       ? weeklyData.map(day => ({
-          name: day.name,
-          value: Math.round(((day.productivity || 0) + (day.discipline || 0)) / 2)
-        }))
+        name: day.name,
+        value: Math.round(((day.productivity || 0) + (day.discipline || 0)) / 2)
+      }))
       : [
-          { name: 'Today', value: productivityScore },
-        ];
+        { name: 'Today', value: productivityScore },
+      ];
 
     return {
       completedDailyTasks,
@@ -469,44 +469,44 @@ const Dashboard = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-6">
 
-              <StatCard
-                title="Productivity"
-                value={`${productivityScore}%`}
-                icon={<Zap size={24} />}
-                trend={{positive: productivityInsights.trendDelta >= 0, value: Math.abs(productivityInsights.trendDelta)}}
-                data-testid="productivity-score-card"
-              />
-              <StatCard
-                title="Discipline"
-                value={`${disciplineScore}%`}
-                icon={<TrendingUp size={24} />}
-                data-testid="discipline-score-card"
-              />
-              <StatCard
-                title="Focus Hours"
-                value="12.5h"
-                icon={<Timer size={24} />}
-                trend={{positive: true, value: 15}}
-                data-testid="focus-hours-card"
-              />
-              <StatCard
-                title="Habit Streak"
-                value="14 Days"
-                icon={<Flame size={24} />}
-                data-testid="habit-streak-card"
-              />
-              <StatCard
-                title="Active Goals"
-                value={goals.length.toString()}
-                icon={<Target size={24} />}
-                data-testid="active-goals-card"
-              />
-              <StatCard
-                title="Tasks Today"
-                value={`${dailyPlan?.plannedTasks.filter(t => t.completed).length}/${dailyPlan?.plannedTasks.length || 0}`}
-                icon={<CheckCircle size={24} />}
-                data-testid="tasks-today-card"
-              />
+            <StatCard
+              title="Productivity"
+              value={`${productivityScore}%`}
+              icon={<Zap size={24} />}
+              trend={{ positive: productivityInsights.trendDelta >= 0, value: Math.abs(productivityInsights.trendDelta) }}
+              data-testid="productivity-score-card"
+            />
+            <StatCard
+              title="Discipline"
+              value={`${disciplineScore}%`}
+              icon={<TrendingUp size={24} />}
+              data-testid="discipline-score-card"
+            />
+            <StatCard
+              title="Focus Hours"
+              value="12.5h"
+              icon={<Timer size={24} />}
+              trend={{ positive: true, value: 15 }}
+              data-testid="focus-hours-card"
+            />
+            <StatCard
+              title="Habit Streak"
+              value="14 Days"
+              icon={<Flame size={24} />}
+              data-testid="habit-streak-card"
+            />
+            <StatCard
+              title="Active Goals"
+              value={goals.length.toString()}
+              icon={<Target size={24} />}
+              data-testid="active-goals-card"
+            />
+            <StatCard
+              title="Tasks Today"
+              value={`${dailyPlan?.plannedTasks.filter(t => t.completed).length}/${dailyPlan?.plannedTasks.length || 0}`}
+              icon={<CheckCircle size={24} />}
+              data-testid="tasks-today-card"
+            />
           </div>
         )}
 
@@ -560,23 +560,21 @@ const Dashboard = () => {
                 {productivityInsights.heatmap.map(day => (
                   <div key={day.name} className="flex flex-col items-center gap-2">
                     <div
-                      className={`w-full min-w-9 h-12 rounded-xl border flex items-end overflow-hidden ${
-                        day.value >= 80
+                      className={`w-full min-w-9 h-12 rounded-xl border flex items-end overflow-hidden ${day.value >= 80
                           ? 'border-emerald-400/40 bg-emerald-400/15'
                           : day.value >= 60
                             ? 'border-amber-400/40 bg-amber-400/15'
                             : 'border-rose-400/40 bg-rose-400/15'
-                      }`}
+                        }`}
                       title={`${day.name}: ${day.value}%`}
                     >
                       <div
-                        className={`w-full ${
-                          day.value >= 80
+                        className={`w-full ${day.value >= 80
                             ? 'bg-emerald-400'
                             : day.value >= 60
                               ? 'bg-amber-400'
                               : 'bg-rose-400'
-                        }`}
+                          }`}
                         style={{ height: `${Math.max(12, day.value)}%` }}
                       />
                     </div>
@@ -608,24 +606,24 @@ const Dashboard = () => {
           <AnalyticsSkeleton />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card className="bg-transparent border cursor-pointer border-white/10 hover:scale-[1.02] transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-4">Productivity Score</h3>
-            <div className="flex justify-center">
-              <DonutChart value={avgProductivity} size={140} color="#7C3AED" label="This Week" />
-            </div>
-          </Card>
+            <Card className="bg-transparent border cursor-pointer border-white/10 hover:scale-[1.02] transition-all duration-300">
+              <h3 className="text-lg font-semibold text-white mb-4">Productivity Score</h3>
+              <div className="flex justify-center">
+                <DonutChart value={avgProductivity} size={140} color="#7C3AED" label="This Week" />
+              </div>
+            </Card>
 
-          <Card className="bg-transparent border cursor-pointer border-white/10 hover:scale-[1.02] transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-4">Discipline Score</h3>
-            <div className="flex justify-center">
-              <DonutChart value={avgDiscipline} size={140} color="#10B981" label="This Week" />
-            </div>
-          </Card>
+            <Card className="bg-transparent border cursor-pointer border-white/10 hover:scale-[1.02] transition-all duration-300">
+              <h3 className="text-lg font-semibold text-white mb-4">Discipline Score</h3>
+              <div className="flex justify-center">
+                <DonutChart value={avgDiscipline} size={140} color="#10B981" label="This Week" />
+              </div>
+            </Card>
 
-          <Card className="bg-transparent border cursor-pointer border-white/10 hover:scale-[1.02] transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-4">Weekly Trend</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              {/* <LineChart data={weeklyData}>
+            <Card className="bg-transparent border cursor-pointer border-white/10 hover:scale-[1.02] transition-all duration-300">
+              <h3 className="text-lg font-semibold text-white mb-4">Weekly Trend</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                {/* <LineChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis dataKey="name" stroke="#9ca3af" style={{ fontSize: '12px' }} />
                 <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
@@ -640,43 +638,43 @@ const Dashboard = () => {
                 <Line type="monotone" dataKey="productivity" stroke="#6366f1" strokeWidth={2} />
                 <Line type="monotone" dataKey="discipline" stroke="#10b981" strokeWidth={2} />
               </LineChart> */}
-              <BarChart data={weeklyData} margin={{ top: 20, right: 0, left: -10, bottom: 0 }} barGap={8} >
-                <defs>
-                  {/* Purple Glow (Productivity) */}
-                  <filter id="purpleGlow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
+                <BarChart data={weeklyData} margin={{ top: 20, right: 0, left: -10, bottom: 0 }} barGap={8} >
+                  <defs>
+                    {/* Purple Glow (Productivity) */}
+                    <filter id="purpleGlow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                      <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
 
-                  {/* Green Glow (Discipline) */}
-                  <filter id="greenGlow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                {/* <CartesianGrid strokeDasharray="3 3" stroke="#374151" /> */}
+                    {/* Green Glow (Discipline) */}
+                    <filter id="greenGlow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                      <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  {/* <CartesianGrid strokeDasharray="3 3" stroke="#374151" /> */}
 
-                <XAxis
-                  dataKey="name"
-                  stroke="#9ca3af"
-                  style={{ fontSize: '12px' }}
-                // axisLine={false}
-                // tickLine={false}
-                />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#9ca3af"
+                    style={{ fontSize: '12px' }}
+                  // axisLine={false}
+                  // tickLine={false}
+                  />
 
-                <YAxis
-                  // stroke="#9ca3af"
-                  // style={{ fontSize: '12px' }}
-                  hide
-                />
+                  <YAxis
+                    // stroke="#9ca3af"
+                    // style={{ fontSize: '12px' }}
+                    hide
+                  />
 
-                {/* <Tooltip
+                  {/* <Tooltip
                 cursor={{ fill: "transparent" }}
                 contentStyle={{
                   backgroundColor: '#1f2937',
@@ -686,67 +684,68 @@ const Dashboard = () => {
                 }}
               /> */}
 
-                {/* <Legend /> */}
+                  {/* <Legend /> */}
 
-                {/* Productivity Bar */}
-                {/* <Bar
+                  {/* Productivity Bar */}
+                  {/* <Bar
                 dataKey="productivity"
                 fill="#6366f1"
                 radius={[6, 6, 0, 0]}
               /> */}
 
-                {/* Discipline Bar */}
-                {/* <Bar
+                  {/* Discipline Bar */}
+                  {/* <Bar
                 dataKey="discipline"
                 fill="#10b981"
                 radius={[6, 6, 0, 0]}
               /> */}
 
-                <Bar
-                  dataKey="productivity"
-                  fill="#6366f1"
-                  radius={[10, 10, 10, 10]}
-                  barSize={8}
-                  filter="url(#purpleGlow)"
-                >
-                  <LabelList dataKey="productivity" position="top" fill="#6366f1" style={{ fontSize: '8px' }} />
-                </Bar>
+                  <Bar
+                    dataKey="productivity"
+                    fill="#6366f1"
+                    radius={[10, 10, 10, 10]}
+                    barSize={8}
+                    filter="url(#purpleGlow)"
+                  >
+                    <LabelList dataKey="productivity" position="top" fill="#6366f1" style={{ fontSize: '8px' }} />
+                  </Bar>
 
-                <Bar
-                  dataKey="discipline"
-                  fill="#10b981"
-                  radius={[10, 10, 10, 10]}
-                  barSize={8}
-                  filter="url(#greenGlow)"
-                >
-                  <LabelList dataKey="discipline" position="top" fill="#10b981" style={{ fontSize: '8px' }} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
+                  <Bar
+                    dataKey="discipline"
+                    fill="#10b981"
+                    radius={[10, 10, 10, 10]}
+                    barSize={8}
+                    filter="url(#greenGlow)"
+                  >
+                    <LabelList dataKey="discipline" position="top" fill="#10b981" style={{ fontSize: '8px' }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
           </div>
         )}
 
 
-        {/* Search Bar */}
-        {hasAnyTasks && (
-          <div className="mb-6 relative max-w-md" data-testid="task-search-bar-container">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
-              <Search size={18} />
-            </span>
-            <input
-              type="text"
-              placeholder="Search tasks by title..."
-              value={taskSearch}
-              onChange={(e) => setTaskSearch(e.target.value)}
-              className="w-full bg-white/5 text-white border border-white/10 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all backdrop-blur-xl text-sm"
-              data-testid="task-search-input"
-            />
-          </div>
-        )}
 
         {(importantTasks.length > 0 || behindTasks.length > 0) && (
           <div className='border-orange-500/30 bg-orange-500/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg items-stretch mb-4'>
+
+            {/* Search Bar */}
+            {hasAnyTasks && (
+              <div className="mb-6 relative max-w-full" data-testid="task-search-bar-container">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
+                  <Search size={18} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Filter tasks by title..."
+                  value={taskSearch}
+                  onChange={(e) => setTaskSearch(e.target.value)}
+                  className="w-full bg-white/5 text-white border border-white/10 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all backdrop-blur-xl text-sm"
+                  data-testid="task-search-input"
+                />
+              </div>
+            )}
             <div className='flex gap-2 flex-col lg:flex-row'>
               {/* Important Tasks */}
               {importantTasks.length > 0 && (
@@ -805,7 +804,7 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-          <div className='flex flex-col sm:flex-row gap-2 w-full mt-4 pt-4'>
+            <div className='flex flex-col sm:flex-row gap-2 w-full mt-4 pt-4'>
               <Link to="/focus-room" className='flex-1'>
                 <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
                   <span>Enter Focus Room</span>
@@ -853,60 +852,60 @@ const Dashboard = () => {
                     className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
                     data-testid={`planned-task-${item.id}`}
                   >
-                  <div className="flex items-start gap-3">
-                    {/* Time */}
-                    <div className="text-center min-w-[60px]">
-                      <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
-                      <p className="text-xs text-gray-500">{item.endTime}</p>
-                    </div>
+                    <div className="flex items-start gap-3">
+                      {/* Time */}
+                      <div className="text-center min-w-[60px]">
+                        <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
+                        <p className="text-xs text-gray-500">{item.endTime}</p>
+                      </div>
 
-                    {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
-                            {item.title}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 rounded-full border ${item.source === 'task'
-                              ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                              : item.source === 'habit'
-                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                                : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
-                              }`}>
-                              {item.source === 'task' ? 'Task' : item.source === 'habit' ? 'Habit' : 'Manual'}
-                            </span>
-                            {item.isImportant && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                                Important
+                      {/* Content */}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                              {item.title}
+                            </h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={`text-xs px-2 py-0.5 rounded-full border ${item.source === 'task'
+                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                                : item.source === 'habit'
+                                  ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                  : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                                }`}>
+                                {item.source === 'task' ? 'Task' : item.source === 'habit' ? 'Habit' : 'Manual'}
                               </span>
-                            )}
+                              {item.isImportant && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                  Important
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Completion Toggle */}
-                        <button
-                          onClick={() => toggleDailyPlanTaskCompletion(item.id)}
-                          aria-label={`${item.completed ? 'Mark incomplete' : 'Mark complete'}: ${item.title}`}
-                          aria-pressed={item.completed}
-                          className={`p-2 rounded-lg transition-all ${item.completed
-                            ? 'bg-green-500/20 text-green-400'
-                            : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
-                            } focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900`}
-                          data-testid={`toggle-planned-task-${item.id}`}
-                        >
-                          <CheckCircle aria-hidden="true" size={20} />
-                        </button>
+                          {/* Completion Toggle */}
+                          <button
+                            onClick={() => toggleDailyPlanTaskCompletion(item.id)}
+                            aria-label={`${item.completed ? 'Mark incomplete' : 'Mark complete'}: ${item.title}`}
+                            aria-pressed={item.completed}
+                            className={`p-2 rounded-lg transition-all ${item.completed
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                              } focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900`}
+                            data-testid={`toggle-planned-task-${item.id}`}
+                          >
+                            <CheckCircle aria-hidden="true" size={20} />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Motion.div>
-              ))) : (
+                  </Motion.div>
+                ))) : (
                 <div className="text-gray-400 text-sm py-6 text-center">
                   No planned tasks match "{taskSearch}"
                 </div>
               )}
-            <div className='flex flex-col sm:flex-row gap-2 w-full h-full justify-between mt-4'>
+              <div className='flex flex-col sm:flex-row gap-2 w-full h-full justify-between mt-4'>
                 <Link to="/focus-room">
                   <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
                     <span>Enter Focus Room</span>
