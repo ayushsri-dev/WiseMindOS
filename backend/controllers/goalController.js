@@ -80,6 +80,23 @@ const updateGoal = async (req, res, next) => {
             return res.json({ success: false, message: 'Goal not found' });
         }
 
+        if (title && normalizeGoalTitle(title) !== normalizeGoalTitle(goal.title)) {
+  const existingGoals = await goalModel.find({ userId });
+
+  const isDuplicate = existingGoals.some(
+    (existingGoal) =>
+      existingGoal._id.toString() !== goalId &&
+      normalizeGoalTitle(existingGoal.title) === normalizeGoalTitle(title)
+  );
+
+  if (isDuplicate) {
+    return res.json({
+      success: false,
+      message: 'A goal with this title already exists',
+    });
+  }
+}
+
         if (title) goal.title = title;
         if (type) goal.type = type;
         if (description !== undefined) goal.description = description;

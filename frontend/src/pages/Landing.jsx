@@ -3,6 +3,7 @@ import { motion as Motion } from "framer-motion";
 import { Target, TrendingUp, Sparkles, Brain, CheckCircle, Zap } from 'lucide-react';
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
+import TestimonialSection from '../components/TestimonialSection';
 import { ArrowRight } from 'lucide-react';
 import logo from '../assets/logo.jpeg';
 
@@ -334,6 +335,9 @@ hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shad
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialSection />
 
       {/* ── Footer ─────────────────────────────────────────────────────────────── */}
       <Motion.footer

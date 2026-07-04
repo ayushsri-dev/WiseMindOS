@@ -1,5 +1,5 @@
 import { motion as Motion } from 'framer-motion';
-import { Activity, AlertTriangle, ArrowRight, BarChart3, CalendarDays, Camera, CheckCircle, Download, Flame, LucideTrophy, Pencil, Star, Target, Timer, TrendingUp, UserPen, UserPlus2, Zap } from 'lucide-react';
+import { Activity, AlertTriangle, ArrowRight, BarChart3, CalendarDays, Camera, CheckCircle, Download, Flame, LucideTrophy, Pencil, Search, Star, Target, Timer, TrendingUp, UserPen, UserPlus2, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bar, BarChart, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
@@ -92,6 +92,7 @@ const Dashboard = () => {
   });
   const [newProfilePic, setNewProfilePic] = useState(null);
   const [weeklyLoading, setWeeklyLoading] = useState(true);
+  const [taskSearch, setTaskSearch] = useState("");
 
   const navigate = useNavigate();
 
@@ -143,11 +144,30 @@ const Dashboard = () => {
 
   // Get today's planned tasks from dailyPlan
   const todayPlannedTasks = dailyPlan?.plannedTasks || [];
-  const pendingPlannedTasks = todayPlannedTasks?.filter(t => !t.completed) || [];
   const hasPlannedTasks = todayPlannedTasks.length > 0;
 
-  const importantTasks = getImportantTasks();
-  const behindTasks = getBehindTasks();
+  const importantTasks = getImportantTasks() || [];
+  const behindTasks = getBehindTasks() || [];
+
+  const filteredImportantTasks = useMemo(() => {
+    return importantTasks.filter(t => t.title?.toLowerCase().includes(taskSearch.toLowerCase()));
+  }, [importantTasks, taskSearch]);
+
+  const filteredBehindTasks = useMemo(() => {
+    return behindTasks.filter(t => t.title?.toLowerCase().includes(taskSearch.toLowerCase()));
+  }, [behindTasks, taskSearch]);
+
+  const filteredTodayPlannedTasks = useMemo(() => {
+    return todayPlannedTasks.filter(t => t.title?.toLowerCase().includes(taskSearch.toLowerCase()));
+  }, [todayPlannedTasks, taskSearch]);
+
+  const pendingPlannedTasks = useMemo(() => {
+    return filteredTodayPlannedTasks.filter(t => !t.completed);
+  }, [filteredTodayPlannedTasks]);
+
+  const hasAnyTasks = useMemo(() => {
+    return importantTasks.length > 0 || behindTasks.length > 0 || todayPlannedTasks.length > 0;
+  }, [importantTasks, behindTasks, todayPlannedTasks]);
 
   const topGoals = (goals || []).slice(0, 4);
   const topProjects = (projects || []).slice(0, 4);
@@ -727,8 +747,26 @@ const Dashboard = () => {
         )}
 
 
+
         {(importantTasks.length > 0 || behindTasks.length > 0) && (
           <div className='border-orange-500/30 bg-orange-500/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg items-stretch mb-4'>
+
+            {/* Search Bar */}
+            {hasAnyTasks && (
+              <div className="mb-6 relative max-w-full" data-testid="task-search-bar-container">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
+                  <Search size={18} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Filter tasks by title..."
+                  value={taskSearch}
+                  onChange={(e) => setTaskSearch(e.target.value)}
+                  className="w-full bg-white/5 text-white border border-white/10 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all backdrop-blur-xl text-sm"
+                  data-testid="task-search-input"
+                />
+              </div>
+            )}
             <div className='flex gap-2 flex-col lg:flex-row'>
               {/* Important Tasks */}
               {importantTasks.length > 0 && (
@@ -740,14 +778,20 @@ const Dashboard = () => {
                   </h2>
                   <p className="text-gray-400 text-sm mb-4">High Priority Tasks, Complete these first.</p>
                   <div className="space-y-3">
-                    {importantTasks.slice(0, 4).map(task => (
-                      <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
-                        <TaskItem
-                          task={task}
-                          onToggle={toggleTaskCompletion}
-                        />
-                      </Motion.div>
-                    ))}
+                    {filteredImportantTasks.length > 0 ? (
+                      filteredImportantTasks.slice(0, 4).map(task => (
+                        <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                          <TaskItem
+                            task={task}
+                            onToggle={toggleTaskCompletion}
+                          />
+                        </Motion.div>
+                      ))
+                    ) : (
+                      <div className="text-gray-400 text-sm py-4 text-center">
+                        No matching important tasks
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -763,14 +807,20 @@ const Dashboard = () => {
                   </h2>
                   <p className="text-gray-400 text-sm mb-4">Act fast on these tasks, You are already running late.</p>
                   <div className="space-y-3">
-                    {behindTasks.slice(0, 4).map(task => (
-                      <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
-                        <TaskItem
-                          task={task}
-                          onToggle={toggleTaskCompletion}
-                        />
-                      </Motion.div>
-                    ))}
+                    {filteredBehindTasks.length > 0 ? (
+                      filteredBehindTasks.slice(0, 4).map(task => (
+                        <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                          <TaskItem
+                            task={task}
+                            onToggle={toggleTaskCompletion}
+                          />
+                        </Motion.div>
+                      ))
+                    ) : (
+                      <div className="text-gray-400 text-sm py-4 text-center">
+                        No matching overdue tasks
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -803,7 +853,7 @@ const Dashboard = () => {
               ))}
             </div>
           </SkeletonCard>
-        ) : hasPlannedTasks && pendingPlannedTasks.length > 0 ? (
+        ) : hasPlannedTasks && (pendingPlannedTasks.length > 0 || taskSearch !== "") ? (
           <Card className="mb-6 bg-white/5 border border-white/10 backdrop-blur-lg shadow-[0_0_40px_rgba(99,102,241,0.2)]">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-white">Today's Planned Tasks</h2>
@@ -812,65 +862,70 @@ const Dashboard = () => {
               </Link>
             </div>
             <div className="space-y-3">
-              {pendingPlannedTasks.slice(0, 5).map((item, index) => (
-                <Motion.div
-                  key={item.id}
-                  whileHover={{ scale: 1.02 }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
-                  data-testid={`planned-task-${item.id}`}
-                >
-                  <div className="flex items-start gap-3">
-                    {/* Time */}
-                    <div className="text-center min-w-[60px]">
-                      <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
-                      <p className="text-xs text-gray-500">{item.endTime}</p>
-                    </div>
+              {pendingPlannedTasks.length > 0 ? (
+                pendingPlannedTasks.slice(0, 5).map((item, index) => (
+                  <Motion.div
+                    key={item.id}
+                    whileHover={{ scale: 1.02 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
+                    data-testid={`planned-task-${item.id}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      {/* Time */}
+                      <div className="text-center min-w-[60px]">
+                        <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
+                        <p className="text-xs text-gray-500">{item.endTime}</p>
+                      </div>
 
-                    {/* Content */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
-                            {item.title}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 rounded-full border ${item.source === 'task'
-                              ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                              : item.source === 'habit'
-                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                                : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
-                              }`}>
-                              {item.source === 'task' ? 'Task' : item.source === 'habit' ? 'Habit' : 'Manual'}
-                            </span>
-                            {item.isImportant && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                                Important
+                      {/* Content */}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                              {item.title}
+                            </h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={`text-xs px-2 py-0.5 rounded-full border ${item.source === 'task'
+                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                                : item.source === 'habit'
+                                  ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                  : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                                }`}>
+                                {item.source === 'task' ? 'Task' : item.source === 'habit' ? 'Habit' : 'Manual'}
                               </span>
-                            )}
+                              {item.isImportant && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                  Important
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Completion Toggle */}
-                        <button
-                          onClick={() => toggleDailyPlanTaskCompletion(item.id)}
-                          aria-label={`${item.completed ? 'Mark incomplete' : 'Mark complete'}: ${item.title}`}
-                          aria-pressed={item.completed}
-                          className={`p-2 rounded-lg transition-all ${item.completed
-                            ? 'bg-green-500/20 text-green-400'
-                            : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
-                            } focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900`}
-                          data-testid={`toggle-planned-task-${item.id}`}
-                        >
-                          <CheckCircle aria-hidden="true" size={20} />
-                        </button>
+                          {/* Completion Toggle */}
+                          <button
+                            onClick={() => toggleDailyPlanTaskCompletion(item.id)}
+                            aria-label={`${item.completed ? 'Mark incomplete' : 'Mark complete'}: ${item.title}`}
+                            aria-pressed={item.completed}
+                            className={`p-2 rounded-lg transition-all ${item.completed
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                              } focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900`}
+                            data-testid={`toggle-planned-task-${item.id}`}
+                          >
+                            <CheckCircle aria-hidden="true" size={20} />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Motion.div>
-              ))}
+                  </Motion.div>
+                ))) : (
+                <div className="text-gray-400 text-sm py-6 text-center">
+                  No planned tasks match "{taskSearch}"
+                </div>
+              )}
               <div className='flex flex-col sm:flex-row gap-2 w-full h-full justify-between mt-4'>
                 <Link to="/focus-room">
                   <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">

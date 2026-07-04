@@ -42,9 +42,6 @@ const getWeeklyStats = async (req, res, next) => {
     const lastWeek = new Date();
     lastWeek.setDate(lastWeek.getDate() - 7);
 
-    const lastWeek = new Date();
-    lastWeek.setDate(lastWeek.getDate() - 7);
-
     const stats = await dailyStatsModel
       .find({ userId, date: { $gte: lastWeek } })
       .sort({ date: 1 });
