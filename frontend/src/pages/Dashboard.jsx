@@ -1,24 +1,23 @@
+import { motion as Motion } from 'framer-motion';
+import { Activity, AlertTriangle, ArrowRight, BarChart3, CalendarDays, Camera, CheckCircle, Download, Flame, LucideTrophy, Pencil, Search, Star, Target, Timer, TrendingUp, UserPen, UserPlus2, Zap } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, UserPen, LucideTrophy, Pencil, Activity, Flame, BarChart3, Timer, Download, Search } from 'lucide-react';
-import { useApp } from '../store/AppContext';
+import { Bar, BarChart, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { statsAPI } from '../api/apiService';
+import profile_pic from '../assets/profile_pic.svg';
 import Card from '../components/Card';
-import StatCard from '../components/StatCard';
 import ClockWidget from '../components/ClockWidget';
 import DonutChart from '../components/DonutChart';
 import GoalCard from '../components/GoalCard';
-import ProjectCard from '../components/ProjectCard';
-import TaskItem from '../components/TaskItem';
-import HabitCard from '../components/HabitCard';
 import GradientButton from '../components/GradientButton';
-import { motion as Motion } from 'framer-motion'
-import { useMemo } from 'react';
-import profile_pic from '../assets/profile_pic.svg'
-import { useState, useEffect } from 'react';
-import { statsAPI } from '../api/apiService';
-import Modal from '../components/Modal';
+import HabitCard from '../components/HabitCard';
 import InputField from '../components/InputField';
-import { AnalyticsSkeleton, DashboardStatsSkeleton, SkeletonCard, SkeletonBlock, TrackerGridSkeleton } from '../components/LoadingSkeleton';
+import { AnalyticsSkeleton, DashboardStatsSkeleton, SkeletonBlock, SkeletonCard, TrackerGridSkeleton } from '../components/LoadingSkeleton';
+import Modal from '../components/Modal';
+import ProjectCard from '../components/ProjectCard';
+import StatCard from '../components/StatCard';
+import TaskItem from '../components/TaskItem';
+import { useApp } from '../store/AppContext';
 
 const formatWeeklyAnalyticsDate = (value) => new Date(value).toISOString().split('T')[0];
 
@@ -361,38 +360,33 @@ const Dashboard = () => {
             className="mb-6 w-full relative overflow-hidden bg-white/15 backdrop-blur-xl border border-white/20 shadow-[0_0_40px_rgba(99,102,241,0.2)] p-4 sm:p-6"
             data-testid="dashboard-profile-card"
           >
-            <button
-              type="button"
-              onClick={() => setShowEditProfile(true)}
-              aria-label="Edit profile details"
-              className="absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/15 cursor-pointer border flex gap-2 border-white/15 hover:border-white/25 px-3 py-3 rounded-full text-white default-bold shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
-            >
-              <UserPen aria-hidden="true" size={20} />
-            </button>
-
+            {/* FIXED: Moved edit button inside the grid layout to prevent overlap */}
             <div
-              className="grid grid-cols-1 sm:grid-cols-[7.5rem_1fr] md:grid-cols-[7.5rem_1fr_auto] gap-x-5 gap-y-4 md:gap-x-6 lg:gap-x-8 w-full pt-12 sm:pt-2 items-start"
+              className="grid grid-cols-1 sm:grid-cols-[7.5rem_1fr] md:grid-cols-[7.5rem_1fr_auto] gap-x-5 gap-y-4 md:gap-x-6 lg:gap-x-8 w-full items-start"
               data-testid="profile-card-layout"
             >
               <div className="flex justify-center sm:justify-start sm:row-span-2 md:row-span-1">
                 <div className="relative p-1 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-amber-400 shadow-[0_0_30px_rgba(99,102,241,0.45)]">
-                  <div className="h-28 w-28 sm:h-[7.5rem] sm:w-[7.5rem] rounded-full relative group border-4 border-black/20 bg-black/30 overflow-hidden">
-                    <img
-                      src={user.profile_picture || profile_pic}
-                      className="w-full h-full object-cover rounded-full"
-                      alt={`${user.name || 'User'} profile`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowEditProfilePic(true)}
-                      aria-label="Change profile picture"
-                      className="w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
-                    >
-                      <div className="h-full w-full flex items-center justify-center">
-                        <Camera aria-hidden="true" size={18} className="text-white" />
-                      </div>
-                    </button>
-                    <div className="border-2 h-4 w-4 sm:h-5 sm:w-5 rounded-full z-10 bottom-1 absolute right-1 border-green-400 bg-green-400" />
+                  <div className='relative'>
+
+                    <div className="h-28 w-28 sm:h-[7.5rem] sm:w-[7.5rem] rounded-full relative group border-4 border-black/20 bg-black/30 overflow-hidden">
+                      <img
+                        src={user.profile_picture || profile_pic}
+                        className="w-full h-full object-cover rounded-full"
+                        alt={`${user.name || 'User'} profile`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowEditProfilePic(true)}
+                        aria-label="Change profile picture"
+                        className="w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                      >
+                        <div className="h-full w-full flex items-center justify-center">
+                          <Camera aria-hidden="true" size={18} className="text-white" />
+                        </div>
+                      </button>
+                    </div>
+                    <div className="absolute bottom-0.5 right-0.5 h-4 w-4 sm:h-5 sm:w-5 rounded-full bg-green-500 border-[3px] border-gray-900 z-20" />
                   </div>
                 </div>
               </div>
@@ -408,9 +402,37 @@ const Dashboard = () => {
                   </span>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl default-bold text-white truncate max-w-full">
-                  {user.name || 'User'}
-                </h2>
+                <div className="flex items-center justify-center sm:justify-start gap-3 max-w-full">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl default-bold text-white truncate">
+                    {user.name || 'User'}
+                  </h2>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowEditProfile(true)}
+                    aria-label="Edit profile details"
+                    data-testid="edit-profile-btn"
+                    className="
+      p-2
+      rounded-full
+      bg-white/10
+      hover:bg-white/15
+      border border-white/15
+      hover:border-white/25
+      text-white
+      shadow-[0_0_10px_rgba(255,255,255,0.2)]
+      hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]
+      transition-all duration-300
+      hover:scale-110
+      focus:outline-none
+      focus-visible:ring-2
+      focus-visible:ring-indigo-300
+      cursor-pointer
+    "
+                  >
+                    <UserPen size={19} />
+                  </button>
+                </div>
                 <span className="cursor-pointer text-sm font-medium text-indigo-400 mb-2 truncate max-w-full">
                   @{user.username || 'username'}
                 </span>
@@ -444,9 +466,12 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="w-full sm:col-span-2 md:col-span-1 md:col-start-3 md:row-start-1 flex justify-center sm:justify-end shrink-0">
+              {/* FIXED: Profile action buttons section - properly integrated into grid */}
+              <div className="w-full sm:col-span-2 md:col-span-1 md:col-start-3 md:row-start-1 flex flex-col gap-3 shrink-0">
+
+
                 <GradientButton
-                  className="w-full max-w-xs sm:max-w-none md:min-w-[9.5rem] px-6 py-3 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_35px_rgba(99,102,241,0.6)] hover:scale-[1.05] transform-gpu transition-all duration-300 ease-in-out border border-indigo-400/20"
+                  className="w-full md:min-w-[9.5rem] px-6 py-3 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_35px_rgba(99,102,241,0.6)] hover:scale-[1.05] transform-gpu transition-all duration-300 ease-in-out border border-indigo-400/20"
                   data-testid="profile-connect-btn"
                 >
                   <UserPlus2 size={20} />
@@ -561,19 +586,19 @@ const Dashboard = () => {
                   <div key={day.name} className="flex flex-col items-center gap-2">
                     <div
                       className={`w-full min-w-9 h-12 rounded-xl border flex items-end overflow-hidden ${day.value >= 80
-                          ? 'border-emerald-400/40 bg-emerald-400/15'
-                          : day.value >= 60
-                            ? 'border-amber-400/40 bg-amber-400/15'
-                            : 'border-rose-400/40 bg-rose-400/15'
+                        ? 'border-emerald-400/40 bg-emerald-400/15'
+                        : day.value >= 60
+                          ? 'border-amber-400/40 bg-amber-400/15'
+                          : 'border-rose-400/40 bg-rose-400/15'
                         }`}
                       title={`${day.name}: ${day.value}%`}
                     >
                       <div
                         className={`w-full ${day.value >= 80
-                            ? 'bg-emerald-400'
-                            : day.value >= 60
-                              ? 'bg-amber-400'
-                              : 'bg-rose-400'
+                          ? 'bg-emerald-400'
+                          : day.value >= 60
+                            ? 'bg-amber-400'
+                            : 'bg-rose-400'
                           }`}
                         style={{ height: `${Math.max(12, day.value)}%` }}
                       />
