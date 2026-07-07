@@ -12,17 +12,13 @@ import GoalCard from '../components/GoalCard';
 import GradientButton from '../components/GradientButton';
 import HabitCard from '../components/HabitCard';
 import InputField from '../components/InputField';
-<<<<<<< feat/export-data-utility
-import { AnalyticsSkeleton, DashboardStatsSkeleton, SkeletonCard, SkeletonBlock, TrackerGridSkeleton } from '../components/LoadingSkeleton';
 import { exportWorkspaceData } from '../utils/exportData';
-=======
 import { AnalyticsSkeleton, DashboardStatsSkeleton, SkeletonBlock, SkeletonCard, TrackerGridSkeleton } from '../components/LoadingSkeleton';
 import Modal from '../components/Modal';
 import ProjectCard from '../components/ProjectCard';
 import StatCard from '../components/StatCard';
 import TaskItem from '../components/TaskItem';
 import { useApp } from '../store/AppContext';
->>>>>>> main
 
 const formatWeeklyAnalyticsDate = (value) => new Date(value).toISOString().split('T')[0];
 
@@ -78,6 +74,7 @@ const Dashboard = () => {
     tasks,
     habits,
     dailyPlan,
+    notebooks,
     updateUser,
     updateUserProfilePic,
     calculateGoalProgress,
