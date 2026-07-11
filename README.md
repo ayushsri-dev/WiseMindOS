@@ -129,6 +129,9 @@ The ecosystem is scaling toward an intelligent productivity framework powered by
 ---
 # Project Architecture
 
+> [!TIP]
+> For a detailed, visual, and comprehensive breakdown of the application structure, data sync logic, and design patterns, check out the [ARCHITECTURE.md](ARCHITECTURE.md) document.
+
 ```text
 WiseMindOS/
 │
@@ -169,6 +172,7 @@ WiseMindOS/
 │   └── vite.config.js
 │
 │
+├── ARCHITECTURE.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 ├── LICENSE
