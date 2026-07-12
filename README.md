@@ -304,6 +304,11 @@ IMAGEKIT_PRIVATE_KEY=placeholder_private_key
 IMAGEKIT_URL_ENDPOINT=placeholder_url_endpoint
 ```
 
+## How to Generate a Strong Secret
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
 ## 5. Install Backend Dependencies
 
 ```bash
