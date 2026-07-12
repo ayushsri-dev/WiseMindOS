@@ -305,7 +305,10 @@ const updateUserProfilePic = async (req, res, next) => {
         let isModified = false;
 
 
-        const profile = req.files.profile && req.files.profile[0];
+        if (!req.files || !req.files.profile || !req.files.profile[0]) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+        const profile = req.files.profile[0];
         // const cover = req.files.cover && req.files.cover[0];
 
         if(profile){
